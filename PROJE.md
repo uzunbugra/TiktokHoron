@@ -26,7 +26,7 @@ Python/FastAPI oyun durumunun tek kaynağıdır. Phaser 3 + TypeScript sadece sa
 
 | Olay | Davranış |
 | --- | --- |
-| `!katil` | Kullanıcıyı bir kez ekle; doluysa FIFO bekleme kuyruğuna al |
+| `!katil [memleket]` | Kullanıcıyı bir kez ekle, doğrulanan memleket kuşağını ata; doluysa FIFO bekleme kuyruğuna al |
 | `!cik` | Aktif oyuncuyu/kuyruk kaydını kaldır; boşluğu sıradakiyle doldur |
 | `!sol`, `!sağ`, `!çök`, `!kalk` | Aktif oyuncunun turdaki tek oyunu; hedefe ulaşan hareketi tüm halkada oynat |
 | `!dalga`, `🔥`, `!ateş` | Sekiz saniyelik sıralı horon dalgasını başlat/destekle; hedef dolarsa dalgayı ve tempoyu güçlendir |
@@ -74,6 +74,7 @@ Yorum olayında `type: "comment"` ve `text: "!katil"` kullanılır. WebSocket me
 - [x] 25/50/100/150 kişi eşiklerinde kademeli canlanan köy meydanı
 - [x] Aktiviteye göre dönüşümlü horonbaşı ve sahne rozeti
 - [x] Sis/yağmur/fırtına katmanları ve `!tempo` ile toplu hava açma
+- [x] Doğrulanan Karadeniz memleketleri için karakter kuşağı renkleri
 - [ ] Kullanım hakkı doğrulanmış müzik ve ses seviyesi kontrolü
 
 ### Aşama 3 — TikTok bağlantısı

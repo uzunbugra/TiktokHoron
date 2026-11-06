@@ -64,7 +64,12 @@ function send(type: 'comment' | 'gift', text = '', gift_id?: string, diamonds = 
   void withFeedback(() => post({ type, user_id: nickname, nickname, text, gift_id, diamonds }), type === 'gift' ? 'Hediye sahneye ulaştı.' : text === '!cik' ? 'Horondan ayrıldın.' : 'Hoş geldin! Halkada yerin hazır.');
 }
 
-document.querySelector('#join')!.addEventListener('click', () => send('comment', '!katil'));
+function join() {
+  const region = document.querySelector<HTMLSelectElement>('#region')!.value;
+  send('comment', region ? `!katil ${region}` : '!katil');
+}
+
+document.querySelector('#join')!.addEventListener('click', join);
 document.querySelector('#leave')!.addEventListener('click', () => send('comment', '!cik'));
 document.querySelector('#rose')!.addEventListener('click', () => send('gift', '', 'demo-rose'));
 document.querySelector('#celebrate')!.addEventListener('click', () => send('gift', '', 'demo-celebration', 10));
@@ -77,16 +82,17 @@ document.querySelector('#wave-fire')!.addEventListener('click', () => send('comm
 document.querySelector('#weather-tempo')!.addEventListener('click', () => send('comment', '!tempo'));
 document.querySelector('#names')!.addEventListener('change', event => scene.setNames((event.target as HTMLInputElement).checked));
 document.querySelector('#nickname')!.addEventListener('keydown', event => {
-  if ((event as KeyboardEvent).key === 'Enter') send('comment', '!katil');
+  if ((event as KeyboardEvent).key === 'Enter') join();
 });
 
 const demoNames = ['Ayşe', 'Murat', 'Ece', 'Kaan', 'Zeynep', 'Ali', 'Elif', 'Deniz', 'Yağmur', 'Emre'];
+const demoRegions = ['trabzon', 'rize', 'ordu', 'giresun', 'artvin', 'samsun'];
 const demoIds: string[] = [];
 document.querySelector('#crowd')!.addEventListener('click', () => {
   void withFeedback(async () => {
     for (let i = 0; i < 25; i++) {
       const id = `demo-${crypto.randomUUID()}`;
-      await post({ type: 'comment', user_id: id, nickname: demoNames[i % demoNames.length], text: '!katil' });
+      await post({ type: 'comment', user_id: id, nickname: demoNames[i % demoNames.length], text: `!katil ${demoRegions[i % demoRegions.length]}` });
       demoIds.push(id);
     }
   }, '25 prova horoncusu eklendi. Tek horon halkası kalabalıkla birlikte büyür.');

@@ -21,6 +21,7 @@ h2{font:10px ui-monospace,monospace;color:#82978b;margin:0 0 16px;display:flex;g
 h2 span{font:13px system-ui;color:#e2e2cf}
 label{display:block;font-size:11px;color:#a3b3a5;margin:0 0 8px}
 input[type=text],input:not([type]){width:100%;border:1px solid #465c50;border-radius:5px;background:#203a32;padding:11px 13px;font-size:14px;font-family:inherit;color:#f3eddc;outline:none}
+.region-label{margin-top:10px}select{width:100%;border:1px solid #465c50;border-radius:5px;background:#203a32;padding:9px 11px;font:12px inherit;color:#f3eddc;outline:none}
 input:focus-visible{border-color:#c3cd95;box-shadow:0 0 0 2px #c3cd9526}
 button{font:12px system-ui;border:0;border-radius:5px;cursor:pointer;transition:background .15s,color .15s,transform .15s}
 button:hover{filter:brightness(1.12)}button:active{transform:translateY(1px)}button:disabled{cursor:wait;opacity:.5}

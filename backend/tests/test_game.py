@@ -129,3 +129,13 @@ def test_weather_starts_on_activity_milestone_and_tempo_clears_it():
         assert game.apply(event(f'weather-{i}', event_id=f'tempo-{i}', text='!tempo'))
     assert game.snapshot()['weather']['kind'] == 'clear'
     assert not game.apply(event('weather-4', event_id='tempo-clear', text='!tempo'))
+
+
+def test_join_command_assigns_only_supported_region():
+    game = Game()
+    assert game.apply(event('regional', text='!katil trabzon'))
+    assert game.players['regional']['region'] == 'trabzon'
+    assert game.apply(event('regional', event_id='change-region', text='!katil rize'))
+    assert game.players['regional']['region'] == 'rize'
+    assert game.apply(event('unknown-region', text='!katil bilinmeyen'))
+    assert game.players['unknown-region']['region'] is None

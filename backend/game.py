@@ -11,6 +11,7 @@ MOVE_COMMANDS = {
 WAVE_START_COMMAND = '!dalga'
 WAVE_SUPPORT_COMMANDS = {'🔥', '!ates', '!ateş'}
 WEATHER_CLEAR_COMMAND = '!tempo'
+REGIONS = {'trabzon', 'rize', 'ordu', 'giresun', 'artvin', 'samsun'}
 
 
 class Event(BaseModel):
@@ -99,6 +100,7 @@ class Game:
             self.seen.popitem(last=False)
         uid = event.user_id
         text = event.text.strip().casefold()
+        command, _, argument = text.partition(' ')
         leader_left = False
         if event.type == 'comment' and text == '!cik':
             leader_left = self.leader['id'] == uid
@@ -143,13 +145,15 @@ class Game:
                 self.weather_supporters.clear()
                 self.weather = {'kind': 'clear', 'revision': self.weather['revision'] + 1,
                                 'support': 0, 'target': self.weather_target()}
-        elif event.type == 'gift' or text == '!katil':
+        elif event.type == 'gift' or command == '!katil':
             player = self.players.get(uid) or self.waiting.get(uid)
             if player is None:
-                player = {'id': uid, 'nickname': event.nickname, 'score': 0}
+                player = {'id': uid, 'nickname': event.nickname, 'score': 0, 'region': None}
                 target = self.players if len(self.players) < self.capacity else self.waiting
                 target[uid] = player
             player['nickname'] = event.nickname
+            if event.type == 'comment':
+                player['region'] = argument if argument in REGIONS else player.get('region')
             if event.type == 'gift':
                 previous = self.supporters.get(uid, {}).get('score', 0)
                 player['score'] = previous + event.count * event.diamonds

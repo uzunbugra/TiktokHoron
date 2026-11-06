@@ -3,7 +3,7 @@ import { createArt } from './art';
 import type { GameState, Gift, MoveName, Player } from './types';
 
 const font = 'monospace';
-type Dancer = { root: Phaser.GameObjects.Container; sprite: Phaser.GameObjects.Sprite; label: Phaser.GameObjects.Text; leaderBadge: Phaser.GameObjects.Text };
+type Dancer = { root: Phaser.GameObjects.Container; sprite: Phaser.GameObjects.Sprite; label: Phaser.GameObjects.Text; leaderBadge: Phaser.GameObjects.Text; regionBand: Phaser.GameObjects.Rectangle };
 type RingLayout = { x: number; y: number; radiusX: number; radiusY: number; scale: number };
 type FestivalObject = Phaser.GameObjects.Shape | Phaser.GameObjects.Text;
 
@@ -144,6 +144,8 @@ export class HoronScene extends Phaser.Scene {
       }
       dancer.label.setText(this.shortName(p.nickname)).setVisible(this.namesVisible);
       dancer.leaderBadge.setVisible(p.id === state.leader.id);
+      const regionColors: Record<string, number> = { trabzon: 0x8e2635, rize: 0x3a8a54, ordu: 0x7f5aa2, giresun: 0x4c8b86, artvin: 0xd08a3d, samsun: 0x4d70a8 };
+      dancer.regionBand.setFillStyle(regionColors[p.region ?? ''] ?? 0xffffff).setVisible(Boolean(p.region));
     });
     this.updateRingGuide(this.ringLayout(state.players.length));
     this.updateFestival(state.players.length);
@@ -164,8 +166,9 @@ export class HoronScene extends Phaser.Scene {
     const sprite = this.add.sprite(0, 0, `dancer-${variant}`).setOrigin(.5, 1).play(`dancer-${variant}`);
     const label = this.add.text(0, -56, this.shortName(p.nickname), { fontFamily: font, fontSize: '10px', color: '#fff5dc', backgroundColor: '#243d35', padding: { x: 3, y: 2 } }).setOrigin(.5);
     const leaderBadge = this.add.text(0, -72, '◆ HORONBAŞI ◆', { fontFamily: font, fontSize: '8px', color: '#ffe19b', backgroundColor: '#774b39', padding: { x: 4, y: 2 } }).setOrigin(.5).setVisible(false);
-    root.add([shadow, sprite, label, leaderBadge]);
-    return { root, sprite, label, leaderBadge };
+    const regionBand = this.add.rectangle(0, -24, 22, 4, 0xffffff).setAngle(-12).setVisible(false);
+    root.add([shadow, sprite, regionBand, label, leaderBadge]);
+    return { root, sprite, label, leaderBadge, regionBand };
   }
 
   private ringLayout(count: number): RingLayout {

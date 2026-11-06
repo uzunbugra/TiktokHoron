@@ -1,4 +1,4 @@
-export type Player = { id: string; nickname: string; score: number };
+export type Player = { id: string; nickname: string; score: number; region?: string | null };
 export type MoveName = 'sol' | 'sag' | 'cok' | 'kalk';
 export type GameState = {
   revision: number;

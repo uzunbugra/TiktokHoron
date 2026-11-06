@@ -44,7 +44,8 @@ def normalize_comment(event: object) -> dict[str, Any] | None:
     identity = _identity(event)
     message_id = _message_id(event)
     text = str(_first_value(event, "comment", "content") or "").strip()
-    if identity is None or message_id is None or text.casefold() not in COMMANDS:
+    command = text.casefold().split(maxsplit=1)[0] if text else ''
+    if identity is None or message_id is None or command not in COMMANDS:
         return None
     user_id, nickname = identity
     return {

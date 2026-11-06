@@ -53,6 +53,8 @@ Geçerli katılım, oy, dalga desteği ve hediyeler aktivite sayılır. Her 25 o
 
 Her 40 geçerli olayda meydan açıksa sis, yağmur veya fırtına başlar. Hava dans temposunu hafifçe etkiler. Aktif horoncular tur başına bir kez `!tempo` yazar; kalabalığa göre belirlenen hedef dolunca hava açılır.
 
+Katılırken `!katil trabzon`, `!katil rize`, `!katil ordu`, `!katil giresun`, `!katil artvin` veya `!katil samsun` yazılabilir. Doğrulanan memleket karakterin üzerinde kendine özgü renkli kuşakla gösterilir; bilinmeyen değerler yok sayılır.
+
 OBS Browser Source: `http://127.0.0.1:5173/?obs=1`, genişlik **1080**, yükseklik **1920**. Bu görünüm prova kontrollerini gizler. Tarayıcıda tam 1080 × 1920 alan doğrulandı; OBS uygulamasında yayın doğrulaması henüz yapılmadı.
 
 ## API örneği
