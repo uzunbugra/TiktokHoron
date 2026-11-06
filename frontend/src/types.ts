@@ -1,10 +1,13 @@
 export type Player = { id: string; nickname: string; score: number };
+export type MoveName = 'sol' | 'sag' | 'cok' | 'kalk';
 export type GameState = {
   revision: number;
   players: Player[];
   waiting: number;
   capacity: number;
   leaderboard: Player[];
+  move: { name: MoveName | null; revision: number };
+  vote: { counts: Record<MoveName, number>; target: number };
 };
 export type Gift = {
   type: 'gift';

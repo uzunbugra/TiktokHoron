@@ -37,11 +37,13 @@ cd backend
 python tiktok_adapter.py @kullanici_adi
 ```
 
-`ADMIN_TOKEN` backend ile aynı olmalıdır. Farklı adres için `HORON_API_URL` kullanılabilir. Adaptör yalnızca `!katil`, `!cik` ve tamamlanmış hediye olaylarını gönderir. Seri hediyelerin ara bildirimleri atlanır; final bildirimindeki kümülatif adet bir kez sayılır. Bağlantı koparsa 2 saniyeden başlayan üstel beklemeyle yeniden bağlanır.
+`ADMIN_TOKEN` backend ile aynı olmalıdır. Farklı adres için `HORON_API_URL` kullanılabilir. Adaptör oyun komutlarını ve tamamlanmış hediye olaylarını gönderir. Seri hediyelerin ara bildirimleri atlanır; final bildirimindeki kümülatif adet bir kez sayılır. Bağlantı koparsa 2 saniyeden başlayan üstel beklemeyle yeniden bağlanır.
 
 TikTokLive resmi olmayan, tersine mühendislik tabanlı bir istemcidir. TikTok değişiklikleri bağlantıyı bozabilir; ilk gerçek yayından önce yorum, tek hediye ve seri hediye ayrı ayrı doğrulanmalıdır.
 
 **+ 25 prova horoncusu ekle** ile 200 kişilik sahneyi deneyebilirsiniz. Bütün horoncular tek çemberde kalır; kişi sayısı arttıkça çember büyür ve karakterler sahneye sığacak biçimde kademeli küçülür. Kapasite aşılırsa yeni kişiler kuyruğa girer. **Provayı temizle** yalnızca bu sayfa açıldıktan sonra bu düğmeyle eklediğiniz karakterleri çıkarır; kişisel katılım ve destek puanları korunur. Sayfayı yenilemek bu yerel prova listesini sıfırlar. **İsimleri göster** sahnedeki izleyici etiketlerini açıp kapatır. FPS göstergesi kısa görsel kontrol içindir; uzun süreli performans ölçümü değildir.
+
+Aktif horoncular `!sol`, `!sağ`, `!çök` ve `!kalk` komutlarıyla toplu harekete oy verebilir. Her kullanıcı tur başına bir oy kullanır; kalabalığa göre artan hedefe ulaşan hareket bütün halkada oynatılır.
 
 OBS Browser Source: `http://127.0.0.1:5173/?obs=1`, genişlik **1080**, yükseklik **1920**. Bu görünüm prova kontrollerini gizler. Tarayıcıda tam 1080 × 1920 alan doğrulandı; OBS uygulamasında yayın doğrulaması henüz yapılmadı.
 

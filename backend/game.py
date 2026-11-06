@@ -1,9 +1,13 @@
 """Transport-independent, single-session horon rules."""
-from collections import OrderedDict
+from collections import Counter, OrderedDict
 from typing import Literal
 from pydantic import BaseModel, Field
 
 DEFAULT_CAPACITY = 200
+MOVE_COMMANDS = {
+    '!sol': 'sol', '!sag': 'sag', '!sağ': 'sag',
+    '!cok': 'cok', '!çök': 'cok', '!kalk': 'kalk',
+}
 
 
 class Event(BaseModel):
@@ -23,12 +27,22 @@ class Game:
         self.players: dict[str, dict] = {}
         self.waiting: dict[str, dict] = {}
         self.supporters: dict[str, dict] = {}
+        self.move_voters: dict[str, str] = {}
+        self.move = {'name': None, 'revision': 0}
         self.seen: OrderedDict[str, None] = OrderedDict()
         self.revision = 0
 
+    def move_vote_target(self):
+        return max(1, min(8, (len(self.players) + 6) // 7))
+
     def snapshot(self):
+        move_counts = Counter(self.move_voters.values())
         return {'revision': self.revision, 'players': list(self.players.values()),
                 'waiting': len(self.waiting), 'capacity': self.capacity,
+                'move': dict(self.move),
+                'vote': {'counts': {name: move_counts.get(name, 0)
+                                    for name in ('sol', 'sag', 'cok', 'kalk')},
+                         'target': self.move_vote_target()},
                 'leaderboard': sorted(self.supporters.values(),
                                       key=lambda p: p['score'], reverse=True)[:3]}
 
@@ -39,13 +53,23 @@ class Game:
         if len(self.seen) > 10000:
             self.seen.popitem(last=False)
         uid = event.user_id
-        if event.type == 'comment' and event.text.strip().casefold() == '!cik':
+        text = event.text.strip().casefold()
+        if event.type == 'comment' and text == '!cik':
             self.players.pop(uid, None)
             self.waiting.pop(uid, None)
+            self.move_voters.pop(uid, None)
             if self.waiting and len(self.players) < self.capacity:
                 next_id = next(iter(self.waiting))
                 self.players[next_id] = self.waiting.pop(next_id)
-        elif event.type == 'gift' or event.text.strip().casefold() == '!katil':
+        elif event.type == 'comment' and text in MOVE_COMMANDS:
+            if uid not in self.players or uid in self.move_voters:
+                return False
+            move = MOVE_COMMANDS[text]
+            self.move_voters[uid] = move
+            if Counter(self.move_voters.values())[move] >= self.move_vote_target():
+                self.move = {'name': move, 'revision': self.move['revision'] + 1}
+                self.move_voters.clear()
+        elif event.type == 'gift' or text == '!katil':
             player = self.players.get(uid) or self.waiting.get(uid)
             if player is None:
                 player = {'id': uid, 'nickname': event.nickname, 'score': 0}

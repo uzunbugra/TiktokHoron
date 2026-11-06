@@ -23,6 +23,9 @@ def test_only_game_commands_are_normalized():
         "text": "!KATIL",
     }
     assert normalize_comment(obj(user=user(), common=common, comment="selam")) is None
+    move = normalize_comment(obj(user=user(), common=obj(msg_id=701), comment="!sağ"))
+    assert move is not None
+    assert move["text"] == "!sağ"
 
 
 def test_intermediate_gift_streak_is_ignored_and_final_total_is_used():

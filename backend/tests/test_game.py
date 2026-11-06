@@ -69,3 +69,17 @@ def test_default_capacity_supports_200_dancers():
     assert game.capacity == 200
     assert len(game.players) == 200
     assert list(game.waiting) == ['ring-200']
+
+
+def test_move_vote_requires_active_unique_users_and_triggers_winner():
+    game = Game()
+    for i in range(10):
+        game.apply(event(f'voter-{i}'))
+    assert game.move_vote_target() == 2
+    assert not game.apply(event('outsider', event_id='outside-vote', text='!sol'))
+    assert game.apply(event('voter-0', event_id='vote-1', text='!sol'))
+    assert not game.apply(event('voter-0', event_id='vote-duplicate', text='!sol'))
+    assert game.snapshot()['vote']['counts']['sol'] == 1
+    assert game.apply(event('voter-1', event_id='vote-2', text='!sol'))
+    assert game.snapshot()['move'] == {'name': 'sol', 'revision': 1}
+    assert game.snapshot()['vote']['counts']['sol'] == 0

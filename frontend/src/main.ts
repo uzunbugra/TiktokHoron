@@ -68,6 +68,10 @@ document.querySelector('#join')!.addEventListener('click', () => send('comment',
 document.querySelector('#leave')!.addEventListener('click', () => send('comment', '!cik'));
 document.querySelector('#rose')!.addEventListener('click', () => send('gift', '', 'demo-rose'));
 document.querySelector('#celebrate')!.addEventListener('click', () => send('gift', '', 'demo-celebration', 10));
+document.querySelector('#move-left')!.addEventListener('click', () => send('comment', '!sol'));
+document.querySelector('#move-right')!.addEventListener('click', () => send('comment', '!sağ'));
+document.querySelector('#move-down')!.addEventListener('click', () => send('comment', '!çök'));
+document.querySelector('#move-up')!.addEventListener('click', () => send('comment', '!kalk'));
 document.querySelector('#names')!.addEventListener('change', event => scene.setNames((event.target as HTMLInputElement).checked));
 document.querySelector('#nickname')!.addEventListener('keydown', event => {
   if ((event as KeyboardEvent).key === 'Enter') send('comment', '!katil');
