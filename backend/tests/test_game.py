@@ -153,3 +153,14 @@ def test_duel_accepts_one_vote_per_active_user_and_finishes():
     assert game.apply(event('duel-2', event_id='duel-b1', text='!b'))
     assert game.snapshot()['duel']['winner'] == 'a'
     assert game.snapshot()['duel']['status'] == 'finished'
+
+
+def test_ring_breaks_on_milestone_and_unique_support_repairs_it():
+    game = Game()
+    for i in range(60):
+        game.apply(event(f'repair-{i}'))
+    assert game.snapshot()['ring']['status'] == 'broken'
+    assert game.snapshot()['ring']['target'] == 6
+    for i in range(6):
+        assert game.apply(event(f'repair-{i}', event_id=f'repair-vote-{i}', text='🤝'))
+    assert game.snapshot()['ring']['status'] == 'intact'

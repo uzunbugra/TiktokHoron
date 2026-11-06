@@ -57,6 +57,8 @@ Katılırken `!katil trabzon`, `!katil rize`, `!katil ordu`, `!katil giresun`, `
 
 Aktif bir horoncu `!duello` ile on saniyelik kemençe düellosunu başlatır. Her aktif kullanıcı `!a` veya `!b` ile bir kez oy verir. Hedef erken dolarsa sonuç hemen açıklanır; A kazanırsa tempo, B kazanırsa halkanın dönüş yönü beş saniyeliğine değişir.
 
+Her 60 geçerli olayda en az sekiz horoncu varsa halkada görünür bir boşluk açılır. Aktif horoncular `🤝` veya `!birleş` ile bir kez destek verir; hedef dolunca tek çember yeniden kapanır.
+
 OBS Browser Source: `http://127.0.0.1:5173/?obs=1`, genişlik **1080**, yükseklik **1920**. Bu görünüm prova kontrollerini gizler. Tarayıcıda tam 1080 × 1920 alan doğrulandı; OBS uygulamasında yayın doğrulaması henüz yapılmadı.
 
 ## API örneği

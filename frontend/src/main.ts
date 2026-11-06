@@ -83,6 +83,7 @@ document.querySelector('#weather-tempo')!.addEventListener('click', () => send('
 document.querySelector('#duel-start')!.addEventListener('click', () => send('comment', '!duello'));
 document.querySelector('#duel-a')!.addEventListener('click', () => send('comment', '!a'));
 document.querySelector('#duel-b')!.addEventListener('click', () => send('comment', '!b'));
+document.querySelector('#ring-repair')!.addEventListener('click', () => send('comment', '🤝'));
 document.querySelector('#names')!.addEventListener('change', event => scene.setNames((event.target as HTMLInputElement).checked));
 document.querySelector('#nickname')!.addEventListener('keydown', event => {
   if ((event as KeyboardEvent).key === 'Enter') join();

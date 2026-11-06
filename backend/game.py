@@ -14,6 +14,7 @@ WEATHER_CLEAR_COMMAND = '!tempo'
 REGIONS = {'trabzon', 'rize', 'ordu', 'giresun', 'artvin', 'samsun'}
 DUEL_START_COMMAND = '!duello'
 DUEL_VOTES = {'!a': 'a', '!b': 'b'}
+RING_REPAIR_COMMANDS = {'🤝', '!birles', '!birleş'}
 
 
 class Event(BaseModel):
@@ -44,6 +45,8 @@ class Game:
         self.duel_voters: set[str] = set()
         self.duel = {'revision': 0, 'status': 'idle', 'a': 0, 'b': 0,
                      'target': 3, 'winner': None}
+        self.repair_supporters: set[str] = set()
+        self.ring = {'revision': 0, 'status': 'intact', 'support': 0, 'target': 1}
         self.seen: OrderedDict[str, None] = OrderedDict()
         self.revision = 0
 
@@ -96,6 +99,14 @@ class Game:
             self.revision += 1
         return True
 
+    def break_ring(self):
+        if self.ring['status'] != 'intact' or len(self.players) < 8:
+            return False
+        self.repair_supporters.clear()
+        self.ring = {'revision': self.ring['revision'] + 1, 'status': 'broken',
+                     'support': 0, 'target': max(2, min(12, (len(self.players) + 9) // 10))}
+        return True
+
     def snapshot(self):
         move_counts = Counter(self.move_voters.values())
         return {'revision': self.revision, 'players': list(self.players.values()),
@@ -105,6 +116,7 @@ class Game:
                 'leader': dict(self.leader),
                 'weather': dict(self.weather),
                 'duel': dict(self.duel),
+                'ring': dict(self.ring),
                 'vote': {'counts': {name: move_counts.get(name, 0)
                                     for name in ('sol', 'sag', 'cok', 'kalk')},
                          'target': self.move_vote_target()},
@@ -129,6 +141,7 @@ class Game:
             self.wave_supporters.discard(uid)
             self.weather_supporters.discard(uid)
             self.duel_voters.discard(uid)
+            self.repair_supporters.discard(uid)
             self.activity.pop(uid, None)
             if self.waiting and len(self.players) < self.capacity:
                 next_id = next(iter(self.waiting))
@@ -179,6 +192,15 @@ class Game:
             self.duel[choice] += 1
             if self.duel['a'] + self.duel['b'] >= self.duel['target']:
                 self.finish_duel(self.duel['revision'], advance_revision=False)
+        elif event.type == 'comment' and text in RING_REPAIR_COMMANDS:
+            if uid not in self.players or self.ring['status'] != 'broken' or uid in self.repair_supporters:
+                return False
+            self.repair_supporters.add(uid)
+            self.ring['support'] = len(self.repair_supporters)
+            if self.ring['support'] >= self.ring['target']:
+                self.repair_supporters.clear()
+                self.ring = {'revision': self.ring['revision'] + 1, 'status': 'intact',
+                             'support': 0, 'target': 1}
         elif event.type == 'gift' or command == '!katil':
             player = self.players.get(uid) or self.waiting.get(uid)
             if player is None:
@@ -201,4 +223,6 @@ class Game:
             self.rotate_leader()
         if text != WEATHER_CLEAR_COMMAND and self.revision % 40 == 0:
             self.start_weather()
+        if text not in RING_REPAIR_COMMANDS and self.revision % 60 == 0:
+            self.break_ring()
         return True
