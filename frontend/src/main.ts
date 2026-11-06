@@ -86,6 +86,11 @@ document.querySelector('#duel-a')!.addEventListener('click', () => send('comment
 document.querySelector('#duel-b')!.addEventListener('click', () => send('comment', '!b'));
 document.querySelector('#ring-repair')!.addEventListener('click', () => send('comment', '🤝'));
 document.querySelector('#save-photo')!.addEventListener('click', () => scene.savePhoto());
+document.querySelector('#raid-start')!.addEventListener('click', () => {
+  const name = document.querySelector<HTMLInputElement>('#raid-name')!.value.trim();
+  if (!name) { notice.textContent = 'Misafir ekip adını gir.'; return; }
+  send('comment', `!baskin ${name}`);
+});
 document.querySelector('#names')!.addEventListener('change', event => scene.setNames((event.target as HTMLInputElement).checked));
 document.querySelector('#nickname')!.addEventListener('keydown', event => {
   if ((event as KeyboardEvent).key === 'Enter') join();

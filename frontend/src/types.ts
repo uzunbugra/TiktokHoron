@@ -1,4 +1,4 @@
-export type Player = { id: string; nickname: string; score: number; region?: string | null; visits?: number; loyalty?: 'new' | 'bronze' | 'silver' | 'gold' };
+export type Player = { id: string; nickname: string; score: number; region?: string | null; visits?: number; loyalty?: 'new' | 'bronze' | 'silver' | 'gold'; raid?: string | null };
 export type MoveName = 'sol' | 'sag' | 'cok' | 'kalk';
 export type GameState = {
   revision: number;
@@ -14,6 +14,7 @@ export type GameState = {
   duel: { revision: number; status: 'idle' | 'active' | 'finished'; a: number; b: number; target: number; winner: 'a' | 'b' | 'tie' | null };
   ring: { revision: number; status: 'intact' | 'broken'; support: number; target: number };
   photo: { revision: number; reason: string | null };
+  raid: { revision: number; name: string | null; remaining: number };
 };
 export type Gift = {
   type: 'gift';

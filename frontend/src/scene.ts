@@ -3,7 +3,7 @@ import { createArt } from './art';
 import type { GameState, Gift, MoveName, Player } from './types';
 
 const font = 'monospace';
-type Dancer = { root: Phaser.GameObjects.Container; sprite: Phaser.GameObjects.Sprite; label: Phaser.GameObjects.Text; leaderBadge: Phaser.GameObjects.Text; regionBand: Phaser.GameObjects.Rectangle; loyaltyBadge: Phaser.GameObjects.Text };
+type Dancer = { root: Phaser.GameObjects.Container; sprite: Phaser.GameObjects.Sprite; label: Phaser.GameObjects.Text; leaderBadge: Phaser.GameObjects.Text; regionBand: Phaser.GameObjects.Rectangle; loyaltyBadge: Phaser.GameObjects.Text; raidBadge: Phaser.GameObjects.Text };
 type RingLayout = { x: number; y: number; radiusX: number; radiusY: number; scale: number };
 type FestivalObject = Phaser.GameObjects.Shape | Phaser.GameObjects.Text;
 
@@ -16,7 +16,8 @@ export class HoronScene extends Phaser.Scene {
     wave: { revision: 0, support: 0, target: 1, status: 'idle' }, leader: { id: null, revision: 0 },
     weather: { kind: 'clear', revision: 0, support: 0, target: 1 },
     duel: { revision: 0, status: 'idle', a: 0, b: 0, target: 3, winner: null },
-    ring: { revision: 0, status: 'intact', support: 0, target: 1 }, photo: { revision: 0, reason: null } };
+    ring: { revision: 0, status: 'intact', support: 0, target: 1 }, photo: { revision: 0, reason: null },
+    raid: { revision: 0, name: null, remaining: 0 } };
   private ringGuide!: Phaser.GameObjects.Ellipse;
   private festivalLayers: FestivalObject[][] = [[], [], [], []];
   private festivalStatus!: Phaser.GameObjects.Text;
@@ -57,6 +58,7 @@ export class HoronScene extends Phaser.Scene {
   private photoRevision = 0;
   private photoUntil = 0;
   private photoFrame!: Phaser.GameObjects.Container;
+  private raidRevision = 0;
 
   constructor() { super('horon'); }
 
@@ -176,6 +178,11 @@ export class HoronScene extends Phaser.Scene {
       this.toast.setText(state.photo.reason === 'celebration' ? 'Kutlama hatırası · poz ver!' : `${state.players.length} horoncu · hatıra karesi!`).setVisible(true);
       this.toastUntil = Date.now() + 2800;
     }
+    if (state.raid.revision > this.raidRevision) {
+      this.raidRevision = state.raid.revision;
+      this.toast.setText(`${state.raid.name?.toUpperCase()} meydana geliyor!`).setVisible(true);
+      this.toastUntil = Date.now() + 3000;
+    }
     const ids = new Set(state.players.map(p => p.id));
     for (const [id, dancer] of this.dancers) {
       if (!ids.has(id)) { dancer.root.destroy(); this.dancers.delete(id); this.effectUntil.delete(id); }
@@ -186,6 +193,7 @@ export class HoronScene extends Phaser.Scene {
         let hash = 0;
         for (const char of p.id) hash = ((hash * 31) + char.charCodeAt(0)) >>> 0;
         dancer = this.makeDancer(p, hash % 6);
+        if (p.raid) dancer.root.setPosition(hash % 2 ? -45 : 585, 350 + hash % 330);
         this.dancers.set(p.id, dancer);
       }
       dancer.label.setText(this.shortName(p.nickname)).setVisible(this.namesVisible);
@@ -196,6 +204,7 @@ export class HoronScene extends Phaser.Scene {
       const loyaltyColors = { bronze: '#c98d63', silver: '#d4d8d5', gold: '#ffd36f' } as const;
       const loyalty = p.loyalty === 'bronze' || p.loyalty === 'silver' || p.loyalty === 'gold' ? p.loyalty : null;
       dancer.loyaltyBadge.setText(loyalty ? loyaltyMarks[loyalty] : '').setColor(loyalty ? loyaltyColors[loyalty] : '#ffffff').setVisible(Boolean(loyalty));
+      dancer.raidBadge.setText(p.raid ? `MİSAFİR · ${p.raid.slice(0, 12).toUpperCase()}` : '').setVisible(Boolean(p.raid));
     });
     this.updateRingGuide(this.ringLayout(state.players.length));
     this.updateFestival(state.players.length);
@@ -221,8 +230,9 @@ export class HoronScene extends Phaser.Scene {
     const leaderBadge = this.add.text(0, -72, '◆ HORONBAŞI ◆', { fontFamily: font, fontSize: '8px', color: '#ffe19b', backgroundColor: '#774b39', padding: { x: 4, y: 2 } }).setOrigin(.5).setVisible(false);
     const regionBand = this.add.rectangle(0, -24, 22, 4, 0xffffff).setAngle(-12).setVisible(false);
     const loyaltyBadge = this.add.text(18, -48, '', { fontFamily: font, fontSize: '12px', color: '#ffd36f', stroke: '#382f25', strokeThickness: 2 }).setOrigin(.5).setVisible(false);
-    root.add([shadow, sprite, regionBand, loyaltyBadge, label, leaderBadge]);
-    return { root, sprite, label, leaderBadge, regionBand, loyaltyBadge };
+    const raidBadge = this.add.text(0, -84, '', { fontFamily: font, fontSize: '7px', color: '#bfe7df', backgroundColor: '#28554f', padding: { x: 4, y: 2 } }).setOrigin(.5).setVisible(false);
+    root.add([shadow, sprite, regionBand, loyaltyBadge, label, leaderBadge, raidBadge]);
+    return { root, sprite, label, leaderBadge, regionBand, loyaltyBadge, raidBadge };
   }
 
   private ringLayout(count: number): RingLayout {

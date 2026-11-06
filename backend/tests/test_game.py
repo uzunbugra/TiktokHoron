@@ -185,3 +185,16 @@ def test_photo_moments_trigger_on_crowd_milestone_and_celebration():
     assert game.snapshot()['photo'] == {'revision': 1, 'reason': '50-horoncu'}
     game.apply(event('photo-0', event_id='photo-gift', type='gift', count=2, diamonds=5))
     assert game.snapshot()['photo'] == {'revision': 2, 'reason': 'celebration'}
+
+
+def test_guest_raid_tags_only_next_ten_new_players():
+    game = Game()
+    game.apply(event('host'))
+    assert game.apply(event('host', event_id='raid-start', text='!baskin Rize Ekibi'))
+    for i in range(11):
+        game.apply(event(f'guest-{i}'))
+    assert game.players['guest-0']['raid'] == 'rize ekibi'
+    assert game.players['guest-9']['raid'] == 'rize ekibi'
+    assert game.players['guest-10']['raid'] is None
+    assert game.snapshot()['raid']['remaining'] == 0
+    assert not game.apply(event('outsider', event_id='bad-raid', text='!baskin ekip'))

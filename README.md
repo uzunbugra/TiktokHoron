@@ -63,6 +63,8 @@ Her 60 geçerli olayda en az sekiz horoncu varsa halkada görünür bir boşluk 
 
 Kullanıcı ziyaretleri ve aktivitesi `backend/horon.db` SQLite veritabanında kalıcı tutulur. Aynı oturumda tekrar katılmak ziyareti artırmaz. 2 ziyarette bronz, 5 ziyarette gümüş, 10 ziyarette altın müdavim işareti karakterin üzerinde görünür. Konum `HORON_DB_PATH` ile değiştirilebilir.
 
+Aktif bir horoncu `!baskin ekip adı` yazarak misafir grubunu duyurabilir. Sonraki 10 yeni katılımcı bu grubun rozetiyle sahnenin iki kenarından toplu giriş yapar; mevcut oyuncular sonradan gruba yazılmaz.
+
 OBS Browser Source: `http://127.0.0.1:5173/?obs=1`, genişlik **1080**, yükseklik **1920**. Bu görünüm prova kontrollerini gizler. Tarayıcıda tam 1080 × 1920 alan doğrulandı; OBS uygulamasında yayın doğrulaması henüz yapılmadı.
 
 ## API örneği

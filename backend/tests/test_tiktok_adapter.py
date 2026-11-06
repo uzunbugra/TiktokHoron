@@ -29,6 +29,9 @@ def test_only_game_commands_are_normalized():
     regional = normalize_comment(obj(user=user(), common=obj(msg_id=702), comment="!katil trabzon"))
     assert regional is not None
     assert regional["text"] == "!katil trabzon"
+    raid = normalize_comment(obj(user=user(), common=obj(msg_id=703), comment="!baskin Rize Ekibi"))
+    assert raid is not None
+    assert raid["text"] == "!baskin Rize Ekibi"
 
 
 def test_intermediate_gift_streak_is_ignored_and_final_total_is_used():

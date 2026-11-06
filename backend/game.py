@@ -16,6 +16,7 @@ DUEL_START_COMMAND = '!duello'
 DUEL_VOTES = {'!a': 'a', '!b': 'b'}
 RING_REPAIR_COMMANDS = {'🤝', '!birles', '!birleş'}
 PHOTO_MILESTONES = {50, 100, 150, 200}
+RAID_COMMAND = '!baskin'
 
 
 class Event(BaseModel):
@@ -49,6 +50,7 @@ class Game:
         self.repair_supporters: set[str] = set()
         self.ring = {'revision': 0, 'status': 'intact', 'support': 0, 'target': 1}
         self.photo = {'revision': 0, 'reason': None}
+        self.raid = {'revision': 0, 'name': None, 'remaining': 0}
         self.seen: OrderedDict[str, None] = OrderedDict()
         self.revision = 0
 
@@ -120,6 +122,7 @@ class Game:
                 'duel': dict(self.duel),
                 'ring': dict(self.ring),
                 'photo': dict(self.photo),
+                'raid': dict(self.raid),
                 'vote': {'counts': {name: move_counts.get(name, 0)
                                     for name in ('sol', 'sag', 'cok', 'kalk')},
                          'target': self.move_vote_target()},
@@ -204,13 +207,22 @@ class Game:
                 self.repair_supporters.clear()
                 self.ring = {'revision': self.ring['revision'] + 1, 'status': 'intact',
                              'support': 0, 'target': 1}
+        elif event.type == 'comment' and command == RAID_COMMAND:
+            raid_name = ' '.join(argument.split())[:16]
+            if uid not in self.players or not raid_name:
+                return False
+            self.raid = {'revision': self.raid['revision'] + 1,
+                         'name': raid_name, 'remaining': 10}
         elif event.type == 'gift' or command == '!katil':
             previous_count = len(self.players)
             player = self.players.get(uid) or self.waiting.get(uid)
             if player is None:
-                player = {'id': uid, 'nickname': event.nickname, 'score': 0, 'region': None}
+                player = {'id': uid, 'nickname': event.nickname, 'score': 0, 'region': None,
+                          'raid': self.raid['name'] if self.raid['remaining'] else None}
                 target = self.players if len(self.players) < self.capacity else self.waiting
                 target[uid] = player
+                if self.raid['remaining']:
+                    self.raid['remaining'] -= 1
             player['nickname'] = event.nickname
             if event.type == 'comment':
                 player['region'] = argument if argument in REGIONS else player.get('region')
