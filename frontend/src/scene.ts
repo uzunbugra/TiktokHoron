@@ -5,6 +5,7 @@ import type { GameState, Gift, MoveName, Player } from './types';
 const font = 'monospace';
 type Dancer = { root: Phaser.GameObjects.Container; sprite: Phaser.GameObjects.Sprite; label: Phaser.GameObjects.Text };
 type RingLayout = { x: number; y: number; radiusX: number; radiusY: number; scale: number };
+type FestivalObject = Phaser.GameObjects.Shape | Phaser.GameObjects.Text;
 
 export class HoronScene extends Phaser.Scene {
   private dancers = new Map<string, Dancer>();
@@ -14,6 +15,9 @@ export class HoronScene extends Phaser.Scene {
     move: { name: null, revision: 0 }, vote: { counts: { sol: 0, sag: 0, cok: 0, kalk: 0 }, target: 1 },
     wave: { revision: 0, support: 0, target: 1, status: 'idle' } };
   private ringGuide!: Phaser.GameObjects.Ellipse;
+  private festivalLayers: FestivalObject[][] = [[], [], [], []];
+  private festivalStatus!: Phaser.GameObjects.Text;
+  private festivalLevel = 0;
   private counter!: Phaser.GameObjects.Text;
   private ranking!: Phaser.GameObjects.Text;
   private connection!: Phaser.GameObjects.Text;
@@ -41,6 +45,7 @@ export class HoronScene extends Phaser.Scene {
   create() {
     createArt(this);
     this.add.image(270, 480, 'village').setDisplaySize(540, 960);
+    this.createFestival();
     this.ringGuide = this.add.ellipse(270, 586, 144, 104, 0xffffff, 0)
       .setStrokeStyle(1, 0xe0c68e, .32).setDepth(200);
     this.add.text(28, 27, 'KARADENİZ • KÖY DÜĞÜNÜ', { fontFamily: font, fontSize: '12px', color: '#b9c9a1', letterSpacing: 2 });
@@ -51,6 +56,7 @@ export class HoronScene extends Phaser.Scene {
     this.connection = this.add.text(29, 160, '', { fontFamily: font, fontSize: '11px', color: '#c6d1b7' });
     this.setConnection(this.connected);
     this.tempo = this.add.text(508, 160, 'TEMPO 1×', { fontFamily: font, fontSize: '11px', color: '#e4bd7d' }).setOrigin(1, 0);
+    this.festivalStatus = this.add.text(508, 181, 'MEYDAN SAKİN', { fontFamily: font, fontSize: '9px', color: '#91a48b' }).setOrigin(1, 0);
     this.couple = [this.makeDancer({ id: 'bride', nickname: 'Gelin', score: 0 }, 6), this.makeDancer({ id: 'groom', nickname: 'Damat', score: 0 }, 7)];
     this.couple.forEach((d, i) => { d.root.setPosition(250 + i * 44, 591).setDepth(591); d.root.setScale(1.15); });
     this.musician = this.makeDancer({ id: 'musician', nickname: 'Kemençeci', score: 0 }, 8);
@@ -117,6 +123,7 @@ export class HoronScene extends Phaser.Scene {
       dancer.label.setText(this.shortName(p.nickname)).setVisible(this.namesVisible);
     });
     this.updateRingGuide(this.ringLayout(state.players.length));
+    this.updateFestival(state.players.length);
     this.counter.setText(`${state.players.length.toString().padStart(3, '0')} / ${state.capacity} HORONCU    1 HALKA    ${state.waiting} SIRADA`);
     const votes = state.vote.counts;
     const voteTotal = votes.sol + votes.sag + votes.cok + votes.kalk;
@@ -151,6 +158,56 @@ export class HoronScene extends Phaser.Scene {
   private updateRingGuide(layout: RingLayout) {
     this.ringGuide.setPosition(layout.x, layout.y)
       .setDisplaySize(layout.radiusX * 2 + 24, layout.radiusY * 2 + 18);
+  }
+
+  private festivalObject(level: number, object: FestivalObject) {
+    object.setDepth(150).setVisible(false);
+    this.festivalLayers[level].push(object);
+    return object;
+  }
+
+  private createFestival() {
+    // 25: warm lanterns wake up around the square.
+    [[64, 303], [476, 303], [48, 688], [492, 688]].forEach(([x, y]) => {
+      this.festivalObject(0, this.add.circle(x, y, 12, 0xf0b85e, .12));
+      const light = this.festivalObject(0, this.add.rectangle(x, y, 7, 11, 0xf4c66f, .9));
+      this.tweens.add({ targets: light, alpha: { from: .65, to: 1 }, duration: 650 + x, yoyo: true, repeat: -1 });
+    });
+    this.festivalObject(0, this.add.text(270, 249, '✦ ŞENLİK BAŞLADI ✦', { fontFamily: font, fontSize: '9px', color: '#ffe0a0', backgroundColor: '#6e493b', padding: { x: 7, y: 3 } }).setOrigin(.5));
+
+    // 50: a second string of colourful pennants crosses the square.
+    this.festivalObject(1, this.add.rectangle(270, 282, 390, 2, 0xd8c999, .65));
+    for (let x = 82; x <= 458; x += 24) {
+      const colors = [0xc9785d, 0xdfb562, 0x8ba99b, 0xb7839c];
+      this.festivalObject(1, this.add.triangle(x, 290, 0, 0, 12, 0, 6, 13, colors[(x / 24 | 0) % colors.length], .95));
+    }
+
+    // 100: houses glow and little spectators gather at the edge.
+    [[55, 351], [108, 351], [418, 362], [470, 362]].forEach(([x, y]) => {
+      const window = this.festivalObject(2, this.add.rectangle(x, y, 12, 14, 0xffd77f, .85));
+      this.tweens.add({ targets: window, alpha: { from: .7, to: 1 }, duration: 1100 + x, yoyo: true, repeat: -1 });
+    });
+    [62, 88, 452, 478].forEach((x, i) => {
+      this.festivalObject(2, this.add.circle(x, 742 - (i % 2) * 7, 7, [0xb85b52, 0x407e86, 0xd3a445, 0x7167a0][i]));
+      this.festivalObject(2, this.add.rectangle(x, 757 - (i % 2) * 7, 12, 22, 0x263b35));
+    });
+
+    // 150: pixel-like stars and fireworks crown the full square.
+    [[118, 235], [205, 265], [342, 250], [430, 225]].forEach(([x, y], i) => {
+      const star = this.festivalObject(3, this.add.star(x, y, 8, 3, 10, [0xf5cf73, 0xdd8c78, 0x9fc5a5, 0xe7b2c1][i], .9));
+      this.tweens.add({ targets: star, scale: { from: .55, to: 1.15 }, alpha: { from: .35, to: 1 }, angle: 45, duration: 800 + i * 170, yoyo: true, repeat: -1 });
+    });
+  }
+
+  private updateFestival(count: number) {
+    const level = count >= 150 ? 4 : count >= 100 ? 3 : count >= 50 ? 2 : count >= 25 ? 1 : 0;
+    this.festivalLayers.forEach((objects, index) => objects.forEach(object => object.setVisible(index < level)));
+    this.festivalStatus.setText(level ? `ŞENLİK SEVİYESİ ${level}/4` : 'MEYDAN SAKİN');
+    if (level > this.festivalLevel) {
+      this.toast.setText(`Meydan canlandı · Şenlik seviyesi ${level}!`).setVisible(true);
+      this.toastUntil = Date.now() + 2200;
+    }
+    this.festivalLevel = level;
   }
 
   gift(gift: Gift) {

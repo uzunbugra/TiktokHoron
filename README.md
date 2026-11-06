@@ -47,6 +47,8 @@ Aktif horoncular `!sol`, `!sağ`, `!çök` ve `!kalk` komutlarıyla toplu hareke
 
 Bir aktif horoncu `!dalga` yazarak sekiz saniyelik horon dalgasını başlatabilir. Aktif izleyiciler `🔥` veya `!ateş` ile bir kez destek verir. Kalabalığa göre belirlenen hedef dolarsa dalga halkayı yeniden dolaşır ve tempo beş saniye artar.
 
+Köy meydanı kalabalıkla birlikte dört aşamada canlanır: 25 horoncuda fenerler, 50'de yeni flamalar, 100'de ev ışıkları ve seyirciler, 150'de yıldız/havai fişek parıltıları açılır. Kişi sayısı eşiğin altına inerse ilgili dekor katmanı kapanır.
+
 OBS Browser Source: `http://127.0.0.1:5173/?obs=1`, genişlik **1080**, yükseklik **1920**. Bu görünüm prova kontrollerini gizler. Tarayıcıda tam 1080 × 1920 alan doğrulandı; OBS uygulamasında yayın doğrulaması henüz yapılmadı.
 
 ## API örneği
