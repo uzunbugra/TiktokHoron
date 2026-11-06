@@ -10,6 +10,7 @@ MOVE_COMMANDS = {
 }
 WAVE_START_COMMAND = '!dalga'
 WAVE_SUPPORT_COMMANDS = {'🔥', '!ates', '!ateş'}
+WEATHER_CLEAR_COMMAND = '!tempo'
 
 
 class Event(BaseModel):
@@ -35,6 +36,8 @@ class Game:
         self.wave = {'revision': 0, 'support': 0, 'target': 1, 'status': 'idle'}
         self.activity: dict[str, int] = {}
         self.leader = {'id': None, 'revision': 0}
+        self.weather_supporters: set[str] = set()
+        self.weather = {'kind': 'clear', 'revision': 0, 'support': 0, 'target': 1}
         self.seen: OrderedDict[str, None] = OrderedDict()
         self.revision = 0
 
@@ -61,6 +64,19 @@ class Game:
         self.leader = {'id': leader_id, 'revision': self.leader['revision'] + 1}
         return True
 
+    def weather_target(self):
+        return max(1, min(10, (len(self.players) + 9) // 10))
+
+    def start_weather(self):
+        if self.weather['kind'] != 'clear':
+            return False
+        kinds = ('sis', 'yagmur', 'firtina')
+        kind = kinds[self.weather['revision'] % len(kinds)]
+        self.weather_supporters.clear()
+        self.weather = {'kind': kind, 'revision': self.weather['revision'] + 1,
+                        'support': 0, 'target': self.weather_target()}
+        return True
+
     def snapshot(self):
         move_counts = Counter(self.move_voters.values())
         return {'revision': self.revision, 'players': list(self.players.values()),
@@ -68,6 +84,7 @@ class Game:
                 'move': dict(self.move),
                 'wave': dict(self.wave),
                 'leader': dict(self.leader),
+                'weather': dict(self.weather),
                 'vote': {'counts': {name: move_counts.get(name, 0)
                                     for name in ('sol', 'sag', 'cok', 'kalk')},
                          'target': self.move_vote_target()},
@@ -89,6 +106,7 @@ class Game:
             self.waiting.pop(uid, None)
             self.move_voters.pop(uid, None)
             self.wave_supporters.discard(uid)
+            self.weather_supporters.discard(uid)
             self.activity.pop(uid, None)
             if self.waiting and len(self.players) < self.capacity:
                 next_id = next(iter(self.waiting))
@@ -115,6 +133,16 @@ class Game:
             self.wave['support'] = len(self.wave_supporters)
             if self.wave['support'] >= self.wave['target']:
                 self.wave['status'] = 'success'
+        elif event.type == 'comment' and text == WEATHER_CLEAR_COMMAND:
+            if (uid not in self.players or self.weather['kind'] == 'clear'
+                    or uid in self.weather_supporters):
+                return False
+            self.weather_supporters.add(uid)
+            self.weather['support'] = len(self.weather_supporters)
+            if self.weather['support'] >= self.weather['target']:
+                self.weather_supporters.clear()
+                self.weather = {'kind': 'clear', 'revision': self.weather['revision'] + 1,
+                                'support': 0, 'target': self.weather_target()}
         elif event.type == 'gift' or text == '!katil':
             player = self.players.get(uid) or self.waiting.get(uid)
             if player is None:
@@ -133,4 +161,6 @@ class Game:
         self.revision += 1
         if leader_left or self.revision % 25 == 0:
             self.rotate_leader()
+        if text != WEATHER_CLEAR_COMMAND and self.revision % 40 == 0:
+            self.start_weather()
         return True

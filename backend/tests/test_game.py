@@ -115,3 +115,17 @@ def test_leader_rotates_by_activity_and_is_replaced_on_leave():
     game.apply(event('leader-7', event_id='leader-leaves', text='!cik'))
     assert game.snapshot()['leader']['id'] != 'leader-7'
     assert game.snapshot()['leader']['revision'] == first_revision + 1
+
+
+def test_weather_starts_on_activity_milestone_and_tempo_clears_it():
+    game = Game()
+    for i in range(40):
+        game.apply(event(f'weather-{i}'))
+    weather = game.snapshot()['weather']
+    assert weather['kind'] == 'sis'
+    assert weather['target'] == 4
+    assert not game.apply(event('outsider', event_id='tempo-outside', text='!tempo'))
+    for i in range(4):
+        assert game.apply(event(f'weather-{i}', event_id=f'tempo-{i}', text='!tempo'))
+    assert game.snapshot()['weather']['kind'] == 'clear'
+    assert not game.apply(event('weather-4', event_id='tempo-clear', text='!tempo'))

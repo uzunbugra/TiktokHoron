@@ -74,6 +74,7 @@ document.querySelector('#move-down')!.addEventListener('click', () => send('comm
 document.querySelector('#move-up')!.addEventListener('click', () => send('comment', '!kalk'));
 document.querySelector('#wave-start')!.addEventListener('click', () => send('comment', '!dalga'));
 document.querySelector('#wave-fire')!.addEventListener('click', () => send('comment', '🔥'));
+document.querySelector('#weather-tempo')!.addEventListener('click', () => send('comment', '!tempo'));
 document.querySelector('#names')!.addEventListener('change', event => scene.setNames((event.target as HTMLInputElement).checked));
 document.querySelector('#nickname')!.addEventListener('keydown', event => {
   if ((event as KeyboardEvent).key === 'Enter') send('comment', '!katil');

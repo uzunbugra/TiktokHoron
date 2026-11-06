@@ -73,6 +73,7 @@ Yorum olayında `type: "comment"` ve `text: "!katil"` kullanılır. WebSocket me
 - [x] Kalp/konfeti efektleri ve kısa süreli görsel tempo değişimi
 - [x] 25/50/100/150 kişi eşiklerinde kademeli canlanan köy meydanı
 - [x] Aktiviteye göre dönüşümlü horonbaşı ve sahne rozeti
+- [x] Sis/yağmur/fırtına katmanları ve `!tempo` ile toplu hava açma
 - [ ] Kullanım hakkı doğrulanmış müzik ve ses seviyesi kontrolü
 
 ### Aşama 3 — TikTok bağlantısı

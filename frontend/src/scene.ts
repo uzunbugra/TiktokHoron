@@ -13,11 +13,15 @@ export class HoronScene extends Phaser.Scene {
   private musician!: Dancer;
   private state: GameState = { revision: 0, players: [], waiting: 0, capacity: 200, leaderboard: [],
     move: { name: null, revision: 0 }, vote: { counts: { sol: 0, sag: 0, cok: 0, kalk: 0 }, target: 1 },
-    wave: { revision: 0, support: 0, target: 1, status: 'idle' }, leader: { id: null, revision: 0 } };
+    wave: { revision: 0, support: 0, target: 1, status: 'idle' }, leader: { id: null, revision: 0 },
+    weather: { kind: 'clear', revision: 0, support: 0, target: 1 } };
   private ringGuide!: Phaser.GameObjects.Ellipse;
   private festivalLayers: FestivalObject[][] = [[], [], [], []];
   private festivalStatus!: Phaser.GameObjects.Text;
   private festivalLevel = 0;
+  private rain: Phaser.GameObjects.Rectangle[] = [];
+  private fog: Phaser.GameObjects.Ellipse[] = [];
+  private storm: Phaser.GameObjects.Rectangle[] = [];
   private counter!: Phaser.GameObjects.Text;
   private ranking!: Phaser.GameObjects.Text;
   private connection!: Phaser.GameObjects.Text;
@@ -40,6 +44,7 @@ export class HoronScene extends Phaser.Scene {
   private waveStartedAt = 0;
   private waveCompletionRevision = 0;
   private leaderRevision = 0;
+  private weatherRevision = 0;
 
   constructor() { super('horon'); }
 
@@ -47,6 +52,7 @@ export class HoronScene extends Phaser.Scene {
     createArt(this);
     this.add.image(270, 480, 'village').setDisplaySize(540, 960);
     this.createFestival();
+    this.createWeather();
     this.ringGuide = this.add.ellipse(270, 586, 144, 104, 0xffffff, 0)
       .setStrokeStyle(1, 0xe0c68e, .32).setDepth(200);
     this.add.text(28, 27, 'KARADENİZ • KÖY DÜĞÜNÜ', { fontFamily: font, fontSize: '12px', color: '#b9c9a1', letterSpacing: 2 });
@@ -58,6 +64,7 @@ export class HoronScene extends Phaser.Scene {
     this.setConnection(this.connected);
     this.tempo = this.add.text(508, 160, 'TEMPO 1×', { fontFamily: font, fontSize: '11px', color: '#e4bd7d' }).setOrigin(1, 0);
     this.festivalStatus = this.add.text(508, 181, 'MEYDAN SAKİN', { fontFamily: font, fontSize: '9px', color: '#91a48b' }).setOrigin(1, 0);
+    this.add.text(29, 181, 'HAVA AÇIK', { fontFamily: font, fontSize: '9px', color: '#9eb4ad' }).setName('weather-status');
     this.couple = [this.makeDancer({ id: 'bride', nickname: 'Gelin', score: 0 }, 6), this.makeDancer({ id: 'groom', nickname: 'Damat', score: 0 }, 7)];
     this.couple.forEach((d, i) => { d.root.setPosition(250 + i * 44, 591).setDepth(591); d.root.setScale(1.15); });
     this.musician = this.makeDancer({ id: 'musician', nickname: 'Kemençeci', score: 0 }, 8);
@@ -117,6 +124,12 @@ export class HoronScene extends Phaser.Scene {
         this.toastUntil = Date.now() + 2600;
       }
     }
+    if (state.weather.revision > this.weatherRevision) {
+      this.weatherRevision = state.weather.revision;
+      const weatherNames = { clear: 'Hava açtı!', sis: 'Meydana sis çöktü', yagmur: 'Karadeniz yağmuru başladı', firtina: 'Fırtına geliyor!' };
+      this.toast.setText(weatherNames[state.weather.kind]).setVisible(true);
+      this.toastUntil = Date.now() + 2500;
+    }
     const ids = new Set(state.players.map(p => p.id));
     for (const [id, dancer] of this.dancers) {
       if (!ids.has(id)) { dancer.root.destroy(); this.dancers.delete(id); this.effectUntil.delete(id); }
@@ -134,6 +147,7 @@ export class HoronScene extends Phaser.Scene {
     });
     this.updateRingGuide(this.ringLayout(state.players.length));
     this.updateFestival(state.players.length);
+    this.updateWeather();
     this.counter.setText(`${state.players.length.toString().padStart(3, '0')} / ${state.capacity} HORONCU    1 HALKA    ${state.waiting} SIRADA`);
     const votes = state.vote.counts;
     const voteTotal = votes.sol + votes.sag + votes.cok + votes.kalk;
@@ -221,6 +235,33 @@ export class HoronScene extends Phaser.Scene {
     this.festivalLevel = level;
   }
 
+  private createWeather() {
+    for (let i = 0; i < 34; i++) {
+      const drop = this.add.rectangle((i * 83) % 530 + 5, 205 + (i * 47) % 510, 2, 15, 0xb9d6d5, .55).setDepth(900).setAngle(12).setVisible(false);
+      this.rain.push(drop);
+      this.tweens.add({ targets: drop, y: '+=260', x: '+=34', duration: 620 + (i % 5) * 80, repeat: -1 });
+    }
+    for (let i = 0; i < 5; i++) {
+      const cloud = this.add.ellipse(70 + i * 115, 390 + (i % 2) * 130, 210, 72, 0xdbe2d2, .12).setDepth(850).setVisible(false);
+      this.fog.push(cloud);
+      this.tweens.add({ targets: cloud, x: `+=${i % 2 ? -45 : 45}`, duration: 3500 + i * 400, yoyo: true, repeat: -1 });
+    }
+    const shade = this.add.rectangle(270, 480, 540, 620, 0x17263d, .2).setDepth(840).setVisible(false);
+    const lightning = this.add.rectangle(270, 390, 540, 380, 0xdbe8ff, 0).setDepth(905).setVisible(false);
+    this.storm.push(shade, lightning);
+    this.tweens.add({ targets: lightning, alpha: { from: 0, to: .32 }, duration: 90, hold: 50, yoyo: true, repeat: -1, repeatDelay: 2600 });
+  }
+
+  private updateWeather() {
+    const kind = this.state.weather.kind;
+    this.rain.forEach(drop => drop.setVisible(kind === 'yagmur' || kind === 'firtina'));
+    this.fog.forEach(cloud => cloud.setVisible(kind === 'sis'));
+    this.storm.forEach(object => object.setVisible(kind === 'firtina'));
+    const status = this.children.getByName('weather-status') as Phaser.GameObjects.Text;
+    const names = { clear: 'HAVA AÇIK', sis: 'SİS', yagmur: 'YAĞMUR', firtina: 'FIRTINA' };
+    status.setText(kind === 'clear' ? names[kind] : `${names[kind]} · !tempo ${this.state.weather.support}/${this.state.weather.target}`);
+  }
+
   gift(gift: Gift) {
     if (!this.ready) { this.pendingGifts.push(gift); return; }
     const celebration = gift.gift_id === 'demo-celebration' || gift.count * gift.diamonds >= 10;
@@ -246,7 +287,8 @@ export class HoronScene extends Phaser.Scene {
     if (!this.ready) return;
     const now = Date.now();
     const boost = now < this.boostUntil;
-    const speed = boost ? 1.6 : 1;
+    const weatherSpeed = this.state.weather.kind === 'firtina' ? .8 : this.state.weather.kind === 'sis' ? .88 : this.state.weather.kind === 'yagmur' ? .94 : 1;
+    const speed = (boost ? 1.6 : 1) * weatherSpeed;
     this.rotation += Math.min(delta, 50) / 20000 * speed;
     this.tempo.setText(boost ? 'TEMPO 1.6× ✦' : 'TEMPO 1×');
     if (now > this.toastUntil) this.toast.setVisible(false);

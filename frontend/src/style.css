@@ -31,6 +31,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #e6c484;outline-offset:4p
 .outline{width:100%;text-align:left;padding:11px 13px;background:transparent;border:1px solid #4b6150;color:#cbd6bb}
 .move-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}.move-row button{padding:8px 4px;background:#29443a;color:#d9d4b8;border:1px solid #425c4e;font-size:10px}
 .wave-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}.wave-row button{padding:9px 7px;background:#4a3e31;color:#efcf9a;border:1px solid #67513c;font-size:10px}
+.weather-button{width:100%;margin-top:6px;padding:8px;background:#263e46;color:#bdd5d4;border:1px solid #3f5960;font-size:10px}
 .options{display:flex;align-items:center;justify-content:space-between;margin-top:13px}.check{display:flex;align-items:center;gap:6px;font-size:11px;margin:0}.check input{accent-color:#c5d298;width:13px;height:13px;margin:0}.text-button{background:none;color:#91a68f;text-decoration:underline;text-underline-offset:3px;padding:3px 0;font-size:10px}
 #notice{font-size:11px;line-height:1.6;color:#91a78f;margin:13px 0 0;min-height:35px}#notice[data-error=true]{color:#efaa93}
 footer{display:flex;flex-direction:column;gap:9px;margin-top:0}footer a{font-size:12px;color:#e1c590;text-decoration:none;display:flex;justify-content:space-between}footer>span{font-size:10px;color:#788f80}

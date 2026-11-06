@@ -51,6 +51,8 @@ Köy meydanı kalabalıkla birlikte dört aşamada canlanır: 25 horoncuda fener
 
 Geçerli katılım, oy, dalga desteği ve hediyeler aktivite sayılır. Her 25 olayda en aktif uygun horoncu **horonbaşı** olur; halkada büyük, parlak ve özel rozetli görünür. Horonbaşı ayrılırsa görev otomatik devredilir.
 
+Her 40 geçerli olayda meydan açıksa sis, yağmur veya fırtına başlar. Hava dans temposunu hafifçe etkiler. Aktif horoncular tur başına bir kez `!tempo` yazar; kalabalığa göre belirlenen hedef dolunca hava açılır.
+
 OBS Browser Source: `http://127.0.0.1:5173/?obs=1`, genişlik **1080**, yükseklik **1920**. Bu görünüm prova kontrollerini gizler. Tarayıcıda tam 1080 × 1920 alan doğrulandı; OBS uygulamasında yayın doğrulaması henüz yapılmadı.
 
 ## API örneği
