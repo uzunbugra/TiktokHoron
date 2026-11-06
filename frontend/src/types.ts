@@ -8,6 +8,7 @@ export type GameState = {
   leaderboard: Player[];
   move: { name: MoveName | null; revision: number };
   vote: { counts: Record<MoveName, number>; target: number };
+  wave: { revision: number; support: number; target: number; status: 'idle' | 'active' | 'success' | 'failed' };
 };
 export type Gift = {
   type: 'gift';

@@ -83,3 +83,23 @@ def test_move_vote_requires_active_unique_users_and_triggers_winner():
     assert game.apply(event('voter-1', event_id='vote-2', text='!sol'))
     assert game.snapshot()['move'] == {'name': 'sol', 'revision': 1}
     assert game.snapshot()['vote']['counts']['sol'] == 0
+
+
+def test_wave_needs_unique_active_supporters_and_can_expire():
+    game = Game()
+    for i in range(16):
+        game.apply(event(f'wave-{i}'))
+    assert game.apply(event('wave-0', event_id='wave-start', text='!dalga'))
+    wave_revision = game.snapshot()['wave']['revision']
+    assert game.snapshot()['wave']['target'] == 2
+    assert not game.apply(event('outsider', event_id='fire-outside', text='🔥'))
+    assert game.apply(event('wave-0', event_id='fire-1', text='🔥'))
+    assert not game.apply(event('wave-0', event_id='fire-repeat', text='!ates'))
+    assert game.apply(event('wave-1', event_id='fire-2', text='!ateş'))
+    assert game.snapshot()['wave']['status'] == 'success'
+    assert not game.expire_wave(wave_revision)
+
+    assert game.apply(event('wave-2', event_id='wave-restart', text='!dalga'))
+    wave_revision = game.snapshot()['wave']['revision']
+    assert game.expire_wave(wave_revision)
+    assert game.snapshot()['wave']['status'] == 'failed'

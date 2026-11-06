@@ -29,6 +29,7 @@ Python/FastAPI oyun durumunun tek kaynağıdır. Phaser 3 + TypeScript sadece sa
 | `!katil` | Kullanıcıyı bir kez ekle; doluysa FIFO bekleme kuyruğuna al |
 | `!cik` | Aktif oyuncuyu/kuyruk kaydını kaldır; boşluğu sıradakiyle doldur |
 | `!sol`, `!sağ`, `!çök`, `!kalk` | Aktif oyuncunun turdaki tek oyunu; hedefe ulaşan hareketi tüm halkada oynat |
+| `!dalga`, `🔥`, `!ateş` | Sekiz saniyelik sıralı horon dalgasını başlat/destekle; hedef dolarsa dalgayı ve tempoyu güçlendir |
 | Tamamlanmış hediye | Kullanıcıyı ekle, puanını artır, kısa görsel efekt göster |
 | Tekrar eden olay kimliği | İkinci kez uygulama |
 | Yayın bağlantısı kopması | Sahneyi koru; adaptör tekrar bağlanmayı denesin |

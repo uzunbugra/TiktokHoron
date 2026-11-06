@@ -45,6 +45,8 @@ TikTokLive resmi olmayan, tersine mühendislik tabanlı bir istemcidir. TikTok d
 
 Aktif horoncular `!sol`, `!sağ`, `!çök` ve `!kalk` komutlarıyla toplu harekete oy verebilir. Her kullanıcı tur başına bir oy kullanır; kalabalığa göre artan hedefe ulaşan hareket bütün halkada oynatılır.
 
+Bir aktif horoncu `!dalga` yazarak sekiz saniyelik horon dalgasını başlatabilir. Aktif izleyiciler `🔥` veya `!ateş` ile bir kez destek verir. Kalabalığa göre belirlenen hedef dolarsa dalga halkayı yeniden dolaşır ve tempo beş saniye artar.
+
 OBS Browser Source: `http://127.0.0.1:5173/?obs=1`, genişlik **1080**, yükseklik **1920**. Bu görünüm prova kontrollerini gizler. Tarayıcıda tam 1080 × 1920 alan doğrulandı; OBS uygulamasında yayın doğrulaması henüz yapılmadı.
 
 ## API örneği

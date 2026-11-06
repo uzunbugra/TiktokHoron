@@ -12,6 +12,20 @@ clients: set[asyncio.Queue] = set()
 ADMIN_TOKEN = os.environ.get('ADMIN_TOKEN', 'local-dev-token')
 
 
+def broadcast(message):
+    for queue in clients:
+        if queue.full():
+            queue.get_nowait()
+        queue.put_nowait(message)
+
+
+async def expire_wave(wave_revision: int):
+    await asyncio.sleep(8)
+    async with lock:
+        if game.expire_wave(wave_revision):
+            broadcast({'state': game.snapshot(), 'effect': None})
+
+
 @app.get('/health')
 async def health():
     return {'status': 'ok', 'mode': 'simulation', 'revision': game.revision}
@@ -25,10 +39,9 @@ async def events(event: Event, x_admin_token: str = Header(default='')):
         applied = game.apply(event)
         if applied:
             message = {'state': game.snapshot(), 'effect': event.model_dump() if event.type == 'gift' else None}
-            for queue in clients:
-                if queue.full():
-                    queue.get_nowait()
-                queue.put_nowait(message)
+            broadcast(message)
+            if event.type == 'comment' and event.text.strip().casefold() == '!dalga':
+                asyncio.create_task(expire_wave(game.wave['revision']))
     return {'applied': applied, 'revision': game.revision}
 
 
