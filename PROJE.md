@@ -94,6 +94,7 @@ TikTokLive üçüncü taraf bağlantı seçeneğidir; resmi TikTok desteği vars
 ### Aşama 4 — Yayına hazırlık
 
 - [ ] SQLite oturum/skor/olay kaydı ve yeniden başlatma kurtarması
+- [x] SQLite kullanıcı ziyaret/aktivite profili ve kalıcı müdavim görünümü
 - [ ] Kuyruk/kullanıcı sınırları, kullanıcı başına hız sınırı
 - [ ] Yönetim paneli, oturum sıfırlama, hediye eşlemesi ve token yönetimi
 - [ ] Uzun süreli yük testi, yayın provası ve kurulum kılavuzu

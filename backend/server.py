@@ -1,12 +1,16 @@
 import asyncio
 import os
 import secrets
+from pathlib import Path
 import anyio
 from fastapi import FastAPI, Header, HTTPException, WebSocket, WebSocketDisconnect
 from game import DEFAULT_CAPACITY, Event, Game
+from storage import ProfileStore
 
 app = FastAPI(title='Horon LIVE — local prototype')
 game = Game(capacity=int(os.environ.get('GAME_CAPACITY', DEFAULT_CAPACITY)))
+profiles = ProfileStore(os.environ.get('HORON_DB_PATH', Path(__file__).with_name('horon.db')))
+session_visitors: set[str] = set()
 lock = asyncio.Lock()
 clients: set[asyncio.Queue] = set()
 ADMIN_TOKEN = os.environ.get('ADMIN_TOKEN', 'local-dev-token')
@@ -45,6 +49,17 @@ async def events(event: Event, x_admin_token: str = Header(default='')):
     async with lock:
         applied = game.apply(event)
         if applied:
+            player = game.players.get(event.user_id) or game.waiting.get(event.user_id)
+            if player is not None:
+                profile = profiles.record(
+                    event.user_id,
+                    event.nickname,
+                    new_visit=event.user_id not in session_visitors,
+                    activity=3 if event.type == 'gift' else 1,
+                )
+                session_visitors.add(event.user_id)
+                player['visits'] = profile['visits']
+                player['loyalty'] = profile['loyalty']
             message = {'state': game.snapshot(), 'effect': event.model_dump() if event.type == 'gift' else None}
             broadcast(message)
             if event.type == 'comment' and event.text.strip().casefold() == '!dalga':

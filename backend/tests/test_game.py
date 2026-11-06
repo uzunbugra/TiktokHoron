@@ -3,11 +3,14 @@ import pytest
 import server
 from game import Event, Game
 from server import ADMIN_TOKEN, app
+from storage import ProfileStore
 
 
 @pytest.fixture(autouse=True)
 def fresh_server(monkeypatch):
     monkeypatch.setattr(server, 'game', Game())
+    monkeypatch.setattr(server, 'profiles', ProfileStore(':memory:'))
+    monkeypatch.setattr(server, 'session_visitors', set())
 
 
 def event(uid, **kwargs):
@@ -48,6 +51,15 @@ def test_http_authorization_and_websocket_delivery():
             response = client.post('/events', json=payload, headers={'x-admin-token': ADMIN_TOKEN})
             assert response.json()['applied']
             assert any(p['id'] == 'integration' for p in ws.receive_json()['state']['players'])
+
+
+def test_http_rejoin_in_same_session_counts_one_persistent_visit():
+    headers = {'x-admin-token': ADMIN_TOKEN}
+    with TestClient(app) as client:
+        client.post('/events', json=event('regular').model_dump(), headers=headers)
+        client.post('/events', json=event('regular', event_id='regular-leave', text='!cik').model_dump(), headers=headers)
+        client.post('/events', json=event('regular', event_id='regular-return').model_dump(), headers=headers)
+    assert server.profiles.get('regular')['visits'] == 1
 
 
 def test_100_events_and_snapshot_after_reconnect():

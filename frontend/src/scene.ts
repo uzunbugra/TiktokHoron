@@ -3,7 +3,7 @@ import { createArt } from './art';
 import type { GameState, Gift, MoveName, Player } from './types';
 
 const font = 'monospace';
-type Dancer = { root: Phaser.GameObjects.Container; sprite: Phaser.GameObjects.Sprite; label: Phaser.GameObjects.Text; leaderBadge: Phaser.GameObjects.Text; regionBand: Phaser.GameObjects.Rectangle };
+type Dancer = { root: Phaser.GameObjects.Container; sprite: Phaser.GameObjects.Sprite; label: Phaser.GameObjects.Text; leaderBadge: Phaser.GameObjects.Text; regionBand: Phaser.GameObjects.Rectangle; loyaltyBadge: Phaser.GameObjects.Text };
 type RingLayout = { x: number; y: number; radiusX: number; radiusY: number; scale: number };
 type FestivalObject = Phaser.GameObjects.Shape | Phaser.GameObjects.Text;
 
@@ -192,6 +192,10 @@ export class HoronScene extends Phaser.Scene {
       dancer.leaderBadge.setVisible(p.id === state.leader.id);
       const regionColors: Record<string, number> = { trabzon: 0x8e2635, rize: 0x3a8a54, ordu: 0x7f5aa2, giresun: 0x4c8b86, artvin: 0xd08a3d, samsun: 0x4d70a8 };
       dancer.regionBand.setFillStyle(regionColors[p.region ?? ''] ?? 0xffffff).setVisible(Boolean(p.region));
+      const loyaltyMarks = { bronze: '◆', silver: '◆◆', gold: '★' } as const;
+      const loyaltyColors = { bronze: '#c98d63', silver: '#d4d8d5', gold: '#ffd36f' } as const;
+      const loyalty = p.loyalty === 'bronze' || p.loyalty === 'silver' || p.loyalty === 'gold' ? p.loyalty : null;
+      dancer.loyaltyBadge.setText(loyalty ? loyaltyMarks[loyalty] : '').setColor(loyalty ? loyaltyColors[loyalty] : '#ffffff').setVisible(Boolean(loyalty));
     });
     this.updateRingGuide(this.ringLayout(state.players.length));
     this.updateFestival(state.players.length);
@@ -216,8 +220,9 @@ export class HoronScene extends Phaser.Scene {
     const label = this.add.text(0, -56, this.shortName(p.nickname), { fontFamily: font, fontSize: '10px', color: '#fff5dc', backgroundColor: '#243d35', padding: { x: 3, y: 2 } }).setOrigin(.5);
     const leaderBadge = this.add.text(0, -72, '◆ HORONBAŞI ◆', { fontFamily: font, fontSize: '8px', color: '#ffe19b', backgroundColor: '#774b39', padding: { x: 4, y: 2 } }).setOrigin(.5).setVisible(false);
     const regionBand = this.add.rectangle(0, -24, 22, 4, 0xffffff).setAngle(-12).setVisible(false);
-    root.add([shadow, sprite, regionBand, label, leaderBadge]);
-    return { root, sprite, label, leaderBadge, regionBand };
+    const loyaltyBadge = this.add.text(18, -48, '', { fontFamily: font, fontSize: '12px', color: '#ffd36f', stroke: '#382f25', strokeThickness: 2 }).setOrigin(.5).setVisible(false);
+    root.add([shadow, sprite, regionBand, loyaltyBadge, label, leaderBadge]);
+    return { root, sprite, label, leaderBadge, regionBand, loyaltyBadge };
   }
 
   private ringLayout(count: number): RingLayout {

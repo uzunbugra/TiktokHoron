@@ -61,6 +61,8 @@ Her 60 geçerli olayda en az sekiz horoncu varsa halkada görünür bir boşluk 
 
 50/100/150/200 horoncu eşiklerinde ve en az 10 destek puanlık kutlamalarda sahne kısa süre poz verir; flaş ve hatıra çerçevesi görünür. **Hatıra karesini indir** düğmesi o anki sahneyi PNG olarak kaydeder.
 
+Kullanıcı ziyaretleri ve aktivitesi `backend/horon.db` SQLite veritabanında kalıcı tutulur. Aynı oturumda tekrar katılmak ziyareti artırmaz. 2 ziyarette bronz, 5 ziyarette gümüş, 10 ziyarette altın müdavim işareti karakterin üzerinde görünür. Konum `HORON_DB_PATH` ile değiştirilebilir.
+
 OBS Browser Source: `http://127.0.0.1:5173/?obs=1`, genişlik **1080**, yükseklik **1920**. Bu görünüm prova kontrollerini gizler. Tarayıcıda tam 1080 × 1920 alan doğrulandı; OBS uygulamasında yayın doğrulaması henüz yapılmadı.
 
 ## API örneği
@@ -91,7 +93,7 @@ npm run build
 
 ## Mevcut sınırlar
 
-- Oyun ve skorlar bellekte; backend yeniden başlayınca sıfırlanır.
+- Canlı oyun, kuyruk ve oturum skoru bellektedir; ziyaret/aktivite profilleri SQLite'ta kalıcıdır.
 - Yerel geliştirme içindir. Tek backend worker kullanın; portları internete açmayın. Prova paneli geliştirme token'ını kullanır. `ADMIN_TOKEN` değiştirilirse panel yerine özel başlıklı API isteği kullanın.
 - TikTok adaptörü ve hediye serisi normalizasyonu uygulandı ancak gerçek yayında henüz doğrulanmadı. SQLite, yönetim paneli, hız sınırı ve kalıcı olay tekilleştirmesi sonraki aşamalardır.
 - Karakterler özgün, kodla çizilmiş altı karelik pixel sprite sheet'leridir. Köy haritası ve efektler de kodla üretilir; harici görsel veya font indirilmez. Müzik henüz eklenmedi.
