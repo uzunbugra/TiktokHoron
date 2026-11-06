@@ -59,6 +59,8 @@ Aktif bir horoncu `!duello` ile on saniyelik kemençe düellosunu başlatır. He
 
 Her 60 geçerli olayda en az sekiz horoncu varsa halkada görünür bir boşluk açılır. Aktif horoncular `🤝` veya `!birleş` ile bir kez destek verir; hedef dolunca tek çember yeniden kapanır.
 
+50/100/150/200 horoncu eşiklerinde ve en az 10 destek puanlık kutlamalarda sahne kısa süre poz verir; flaş ve hatıra çerçevesi görünür. **Hatıra karesini indir** düğmesi o anki sahneyi PNG olarak kaydeder.
+
 OBS Browser Source: `http://127.0.0.1:5173/?obs=1`, genişlik **1080**, yükseklik **1920**. Bu görünüm prova kontrollerini gizler. Tarayıcıda tam 1080 × 1920 alan doğrulandı; OBS uygulamasında yayın doğrulaması henüz yapılmadı.
 
 ## API örneği

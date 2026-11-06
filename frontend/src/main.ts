@@ -6,6 +6,7 @@ import './style.css';
 const scene = new HoronScene();
 const game = new Phaser.Game({ type: Phaser.AUTO, parent: 'game', width: 540, height: 960,
   pixelArt: true, backgroundColor: '#172f33',
+  render: { preserveDrawingBuffer: true },
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH }, scene });
 const notice = document.querySelector<HTMLElement>('#notice')!;
 const connection = document.querySelector<HTMLElement>('#connection')!;
@@ -84,6 +85,7 @@ document.querySelector('#duel-start')!.addEventListener('click', () => send('com
 document.querySelector('#duel-a')!.addEventListener('click', () => send('comment', '!a'));
 document.querySelector('#duel-b')!.addEventListener('click', () => send('comment', '!b'));
 document.querySelector('#ring-repair')!.addEventListener('click', () => send('comment', '🤝'));
+document.querySelector('#save-photo')!.addEventListener('click', () => scene.savePhoto());
 document.querySelector('#names')!.addEventListener('change', event => scene.setNames((event.target as HTMLInputElement).checked));
 document.querySelector('#nickname')!.addEventListener('keydown', event => {
   if ((event as KeyboardEvent).key === 'Enter') join();

@@ -13,6 +13,7 @@ export type GameState = {
   weather: { kind: 'clear' | 'sis' | 'yagmur' | 'firtina'; revision: number; support: number; target: number };
   duel: { revision: number; status: 'idle' | 'active' | 'finished'; a: number; b: number; target: number; winner: 'a' | 'b' | 'tie' | null };
   ring: { revision: number; status: 'intact' | 'broken'; support: number; target: number };
+  photo: { revision: number; reason: string | null };
 };
 export type Gift = {
   type: 'gift';

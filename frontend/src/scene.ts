@@ -16,7 +16,7 @@ export class HoronScene extends Phaser.Scene {
     wave: { revision: 0, support: 0, target: 1, status: 'idle' }, leader: { id: null, revision: 0 },
     weather: { kind: 'clear', revision: 0, support: 0, target: 1 },
     duel: { revision: 0, status: 'idle', a: 0, b: 0, target: 3, winner: null },
-    ring: { revision: 0, status: 'intact', support: 0, target: 1 } };
+    ring: { revision: 0, status: 'intact', support: 0, target: 1 }, photo: { revision: 0, reason: null } };
   private ringGuide!: Phaser.GameObjects.Ellipse;
   private festivalLayers: FestivalObject[][] = [[], [], [], []];
   private festivalStatus!: Phaser.GameObjects.Text;
@@ -54,6 +54,9 @@ export class HoronScene extends Phaser.Scene {
   private duelWinner: 'a' | 'b' | 'tie' | null = null;
   private duelUntil = 0;
   private ringRevision = 0;
+  private photoRevision = 0;
+  private photoUntil = 0;
+  private photoFrame!: Phaser.GameObjects.Container;
 
   constructor() { super('horon'); }
 
@@ -64,6 +67,11 @@ export class HoronScene extends Phaser.Scene {
     this.createWeather();
     this.ringGuide = this.add.ellipse(270, 586, 144, 104, 0xffffff, 0)
       .setStrokeStyle(1, 0xe0c68e, .32).setDepth(200);
+    this.photoFrame = this.add.container(270, 480).setDepth(1800).setVisible(false);
+    const photoBorder = this.add.rectangle(0, 0, 504, 850, 0xffffff, 0).setStrokeStyle(5, 0xffe0a2, .95);
+    const photoTitle = this.add.text(0, -398, '✦ HORON HATIRASI ✦', { fontFamily: font, fontSize: '14px', color: '#fff0c4', backgroundColor: '#6d4939', padding: { x: 10, y: 5 } }).setOrigin(.5);
+    const flash = this.add.rectangle(0, 0, 540, 960, 0xffffff, 0);
+    this.photoFrame.add([photoBorder, photoTitle, flash]);
     this.add.text(28, 27, 'KARADENİZ • KÖY DÜĞÜNÜ', { fontFamily: font, fontSize: '12px', color: '#b9c9a1', letterSpacing: 2 });
     this.add.text(26, 55, 'HORON', { fontFamily: font, fontSize: '55px', fontStyle: 'bold', color: '#fff0ce' });
     this.add.rectangle(283, 84, 60, 25, 0xca795d);
@@ -157,6 +165,16 @@ export class HoronScene extends Phaser.Scene {
       this.ringRevision = state.ring.revision;
       this.toast.setText(state.ring.status === 'broken' ? 'Halka koptu · birlikte kapatın!' : 'Halka yeniden birleşti!').setVisible(true);
       this.toastUntil = Date.now() + 2500;
+    }
+    if (state.photo.revision > this.photoRevision) {
+      this.photoRevision = state.photo.revision;
+      this.photoUntil = Date.now() + 3200;
+      this.photoFrame.setVisible(true);
+      const flash = this.photoFrame.list[2] as Phaser.GameObjects.Rectangle;
+      flash.setAlpha(.85);
+      this.tweens.add({ targets: flash, alpha: 0, duration: 420 });
+      this.toast.setText(state.photo.reason === 'celebration' ? 'Kutlama hatırası · poz ver!' : `${state.players.length} horoncu · hatıra karesi!`).setVisible(true);
+      this.toastUntil = Date.now() + 2800;
     }
     const ids = new Set(state.players.map(p => p.id));
     for (const [id, dancer] of this.dancers) {
@@ -321,14 +339,16 @@ export class HoronScene extends Phaser.Scene {
     if (!this.ready) return;
     const now = Date.now();
     const boost = now < this.boostUntil;
+    const posing = now < this.photoUntil;
     const weatherSpeed = this.state.weather.kind === 'firtina' ? .8 : this.state.weather.kind === 'sis' ? .88 : this.state.weather.kind === 'yagmur' ? .94 : 1;
     const duelActive = now < this.duelUntil;
     const duelSpeed = duelActive && this.duelWinner === 'a' ? 1.25 : 1;
     const duelDirection = duelActive && this.duelWinner === 'b' ? -1 : 1;
-    const speed = (boost ? 1.6 : 1) * weatherSpeed * duelSpeed;
+    const speed = posing ? 0 : (boost ? 1.6 : 1) * weatherSpeed * duelSpeed;
     this.rotation += Math.min(delta, 50) / 20000 * speed * duelDirection;
     this.tempo.setText(boost ? 'TEMPO 1.6× ✦' : 'TEMPO 1×');
     if (now > this.toastUntil) this.toast.setVisible(false);
+    if (!posing) this.photoFrame.setVisible(false);
     const count = this.state.players.length;
     const layout = this.ringLayout(count);
     const moving = now < this.moveUntil && this.moveName;
@@ -365,5 +385,12 @@ export class HoronScene extends Phaser.Scene {
     [...this.couple, this.musician].forEach(d => { d.sprite.anims.timeScale = speed; });
     const fps = document.querySelector('#fps');
     if (fps) fps.textContent = `${Math.round(this.game.loop.actualFps)} FPS`;
+  }
+
+  savePhoto() {
+    const link = document.createElement('a');
+    link.download = `horon-hatirasi-${new Date().toISOString().replace(/[:.]/g, '-')}.png`;
+    link.href = this.game.canvas.toDataURL('image/png');
+    link.click();
   }
 }

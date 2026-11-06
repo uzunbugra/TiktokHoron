@@ -77,6 +77,7 @@ Yorum olayında `type: "comment"` ve `text: "!katil"` kullanılır. WebSocket me
 - [x] Doğrulanan Karadeniz memleketleri için karakter kuşağı renkleri
 - [x] On saniyelik A/B kemençe düellosu ve kazanan ritim etkisi
 - [x] Etkinlik eşiğinde halka kopması ve `🤝` / `!birleş` ile toplu onarım
+- [x] Kalabalık eşikleri/büyük kutlamada fotoğraf anı ve PNG hatıra karesi
 - [ ] Kullanım hakkı doğrulanmış müzik ve ses seviyesi kontrolü
 
 ### Aşama 3 — TikTok bağlantısı

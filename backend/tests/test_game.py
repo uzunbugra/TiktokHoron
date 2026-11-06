@@ -164,3 +164,12 @@ def test_ring_breaks_on_milestone_and_unique_support_repairs_it():
     for i in range(6):
         assert game.apply(event(f'repair-{i}', event_id=f'repair-vote-{i}', text='🤝'))
     assert game.snapshot()['ring']['status'] == 'intact'
+
+
+def test_photo_moments_trigger_on_crowd_milestone_and_celebration():
+    game = Game()
+    for i in range(50):
+        game.apply(event(f'photo-{i}'))
+    assert game.snapshot()['photo'] == {'revision': 1, 'reason': '50-horoncu'}
+    game.apply(event('photo-0', event_id='photo-gift', type='gift', count=2, diamonds=5))
+    assert game.snapshot()['photo'] == {'revision': 2, 'reason': 'celebration'}

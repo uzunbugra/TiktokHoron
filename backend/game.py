@@ -15,6 +15,7 @@ REGIONS = {'trabzon', 'rize', 'ordu', 'giresun', 'artvin', 'samsun'}
 DUEL_START_COMMAND = '!duello'
 DUEL_VOTES = {'!a': 'a', '!b': 'b'}
 RING_REPAIR_COMMANDS = {'🤝', '!birles', '!birleş'}
+PHOTO_MILESTONES = {50, 100, 150, 200}
 
 
 class Event(BaseModel):
@@ -47,6 +48,7 @@ class Game:
                      'target': 3, 'winner': None}
         self.repair_supporters: set[str] = set()
         self.ring = {'revision': 0, 'status': 'intact', 'support': 0, 'target': 1}
+        self.photo = {'revision': 0, 'reason': None}
         self.seen: OrderedDict[str, None] = OrderedDict()
         self.revision = 0
 
@@ -117,6 +119,7 @@ class Game:
                 'weather': dict(self.weather),
                 'duel': dict(self.duel),
                 'ring': dict(self.ring),
+                'photo': dict(self.photo),
                 'vote': {'counts': {name: move_counts.get(name, 0)
                                     for name in ('sol', 'sag', 'cok', 'kalk')},
                          'target': self.move_vote_target()},
@@ -202,6 +205,7 @@ class Game:
                 self.ring = {'revision': self.ring['revision'] + 1, 'status': 'intact',
                              'support': 0, 'target': 1}
         elif event.type == 'gift' or command == '!katil':
+            previous_count = len(self.players)
             player = self.players.get(uid) or self.waiting.get(uid)
             if player is None:
                 player = {'id': uid, 'nickname': event.nickname, 'score': 0, 'region': None}
@@ -214,6 +218,11 @@ class Game:
                 previous = self.supporters.get(uid, {}).get('score', 0)
                 player['score'] = previous + event.count * event.diamonds
                 self.supporters[uid] = dict(player)
+                if event.count * event.diamonds >= 10:
+                    self.photo = {'revision': self.photo['revision'] + 1, 'reason': 'celebration'}
+            if len(self.players) != previous_count and len(self.players) in PHOTO_MILESTONES:
+                self.photo = {'revision': self.photo['revision'] + 1,
+                              'reason': f'{len(self.players)}-horoncu'}
         else:
             return False
         if uid in self.players:
