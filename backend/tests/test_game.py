@@ -103,3 +103,15 @@ def test_wave_needs_unique_active_supporters_and_can_expire():
     wave_revision = game.snapshot()['wave']['revision']
     assert game.expire_wave(wave_revision)
     assert game.snapshot()['wave']['status'] == 'failed'
+
+
+def test_leader_rotates_by_activity_and_is_replaced_on_leave():
+    game = Game()
+    for i in range(24):
+        game.apply(event(f'leader-{i}'))
+    game.apply(event('leader-7', event_id='leader-gift', type='gift', diamonds=5))
+    assert game.snapshot()['leader']['id'] == 'leader-7'
+    first_revision = game.snapshot()['leader']['revision']
+    game.apply(event('leader-7', event_id='leader-leaves', text='!cik'))
+    assert game.snapshot()['leader']['id'] != 'leader-7'
+    assert game.snapshot()['leader']['revision'] == first_revision + 1

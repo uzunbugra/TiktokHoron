@@ -9,6 +9,7 @@ export type GameState = {
   move: { name: MoveName | null; revision: number };
   vote: { counts: Record<MoveName, number>; target: number };
   wave: { revision: number; support: number; target: number; status: 'idle' | 'active' | 'success' | 'failed' };
+  leader: { id: string | null; revision: number };
 };
 export type Gift = {
   type: 'gift';

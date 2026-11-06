@@ -33,6 +33,8 @@ class Game:
         self.move = {'name': None, 'revision': 0}
         self.wave_supporters: set[str] = set()
         self.wave = {'revision': 0, 'support': 0, 'target': 1, 'status': 'idle'}
+        self.activity: dict[str, int] = {}
+        self.leader = {'id': None, 'revision': 0}
         self.seen: OrderedDict[str, None] = OrderedDict()
         self.revision = 0
 
@@ -49,12 +51,23 @@ class Game:
         self.revision += 1
         return True
 
+    def rotate_leader(self):
+        candidates = [uid for uid in self.players if uid != self.leader['id']]
+        if not candidates:
+            candidates = list(self.players)
+        leader_id = max(candidates, key=lambda uid: self.activity.get(uid, 0), default=None)
+        if leader_id == self.leader['id']:
+            return False
+        self.leader = {'id': leader_id, 'revision': self.leader['revision'] + 1}
+        return True
+
     def snapshot(self):
         move_counts = Counter(self.move_voters.values())
         return {'revision': self.revision, 'players': list(self.players.values()),
                 'waiting': len(self.waiting), 'capacity': self.capacity,
                 'move': dict(self.move),
                 'wave': dict(self.wave),
+                'leader': dict(self.leader),
                 'vote': {'counts': {name: move_counts.get(name, 0)
                                     for name in ('sol', 'sag', 'cok', 'kalk')},
                          'target': self.move_vote_target()},
@@ -69,11 +82,14 @@ class Game:
             self.seen.popitem(last=False)
         uid = event.user_id
         text = event.text.strip().casefold()
+        leader_left = False
         if event.type == 'comment' and text == '!cik':
+            leader_left = self.leader['id'] == uid
             self.players.pop(uid, None)
             self.waiting.pop(uid, None)
             self.move_voters.pop(uid, None)
             self.wave_supporters.discard(uid)
+            self.activity.pop(uid, None)
             if self.waiting and len(self.players) < self.capacity:
                 next_id = next(iter(self.waiting))
                 self.players[next_id] = self.waiting.pop(next_id)
@@ -112,5 +128,9 @@ class Game:
                 self.supporters[uid] = dict(player)
         else:
             return False
+        if uid in self.players:
+            self.activity[uid] = self.activity.get(uid, 0) + (3 if event.type == 'gift' else 1)
         self.revision += 1
+        if leader_left or self.revision % 25 == 0:
+            self.rotate_leader()
         return True

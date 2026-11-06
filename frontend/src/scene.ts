@@ -3,7 +3,7 @@ import { createArt } from './art';
 import type { GameState, Gift, MoveName, Player } from './types';
 
 const font = 'monospace';
-type Dancer = { root: Phaser.GameObjects.Container; sprite: Phaser.GameObjects.Sprite; label: Phaser.GameObjects.Text };
+type Dancer = { root: Phaser.GameObjects.Container; sprite: Phaser.GameObjects.Sprite; label: Phaser.GameObjects.Text; leaderBadge: Phaser.GameObjects.Text };
 type RingLayout = { x: number; y: number; radiusX: number; radiusY: number; scale: number };
 type FestivalObject = Phaser.GameObjects.Shape | Phaser.GameObjects.Text;
 
@@ -13,7 +13,7 @@ export class HoronScene extends Phaser.Scene {
   private musician!: Dancer;
   private state: GameState = { revision: 0, players: [], waiting: 0, capacity: 200, leaderboard: [],
     move: { name: null, revision: 0 }, vote: { counts: { sol: 0, sag: 0, cok: 0, kalk: 0 }, target: 1 },
-    wave: { revision: 0, support: 0, target: 1, status: 'idle' } };
+    wave: { revision: 0, support: 0, target: 1, status: 'idle' }, leader: { id: null, revision: 0 } };
   private ringGuide!: Phaser.GameObjects.Ellipse;
   private festivalLayers: FestivalObject[][] = [[], [], [], []];
   private festivalStatus!: Phaser.GameObjects.Text;
@@ -39,6 +39,7 @@ export class HoronScene extends Phaser.Scene {
   private waveRevision = 0;
   private waveStartedAt = 0;
   private waveCompletionRevision = 0;
+  private leaderRevision = 0;
 
   constructor() { super('horon'); }
 
@@ -108,6 +109,14 @@ export class HoronScene extends Phaser.Scene {
       this.toast.setText('Dalga tamamlandı · kemençe coştu!').setVisible(true);
       this.toastUntil = Date.now() + 2600;
     }
+    if (state.leader.revision > this.leaderRevision) {
+      this.leaderRevision = state.leader.revision;
+      const leader = state.players.find(player => player.id === state.leader.id);
+      if (leader) {
+        this.toast.setText(`${leader.nickname.slice(0, 18)} horonbaşı oldu!`).setVisible(true);
+        this.toastUntil = Date.now() + 2600;
+      }
+    }
     const ids = new Set(state.players.map(p => p.id));
     for (const [id, dancer] of this.dancers) {
       if (!ids.has(id)) { dancer.root.destroy(); this.dancers.delete(id); this.effectUntil.delete(id); }
@@ -121,6 +130,7 @@ export class HoronScene extends Phaser.Scene {
         this.dancers.set(p.id, dancer);
       }
       dancer.label.setText(this.shortName(p.nickname)).setVisible(this.namesVisible);
+      dancer.leaderBadge.setVisible(p.id === state.leader.id);
     });
     this.updateRingGuide(this.ringLayout(state.players.length));
     this.updateFestival(state.players.length);
@@ -139,8 +149,9 @@ export class HoronScene extends Phaser.Scene {
     const shadow = this.add.ellipse(0, 0, 29, 8, 0x283b32, .23);
     const sprite = this.add.sprite(0, 0, `dancer-${variant}`).setOrigin(.5, 1).play(`dancer-${variant}`);
     const label = this.add.text(0, -56, this.shortName(p.nickname), { fontFamily: font, fontSize: '10px', color: '#fff5dc', backgroundColor: '#243d35', padding: { x: 3, y: 2 } }).setOrigin(.5);
-    root.add([shadow, sprite, label]);
-    return { root, sprite, label };
+    const leaderBadge = this.add.text(0, -72, '◆ HORONBAŞI ◆', { fontFamily: font, fontSize: '8px', color: '#ffe19b', backgroundColor: '#774b39', padding: { x: 4, y: 2 } }).setOrigin(.5).setVisible(false);
+    root.add([shadow, sprite, label, leaderBadge]);
+    return { root, sprite, label, leaderBadge };
   }
 
   private ringLayout(count: number): RingLayout {
@@ -260,11 +271,13 @@ export class HoronScene extends Phaser.Scene {
       dancer.root.setPosition(Phaser.Math.Linear(dancer.root.x, x, 1 - Math.exp(-delta / 180)), Phaser.Math.Linear(dancer.root.y, y, 1 - Math.exp(-delta / 180)));
       dancer.root.setDepth(dancer.root.y);
       const highlighted = (this.effectUntil.get(p.id) ?? 0) > now;
-      const scale = highlighted ? layout.scale * 1.28 : layout.scale;
+      const isLeader = p.id === this.state.leader.id;
+      const scale = highlighted || isLeader ? layout.scale * 1.2 : layout.scale;
       dancer.root.setScale(scale * (1 + wavePulse * .22), scale * (this.moveName === 'cok' ? 1 - movePulse * .25 : 1) * (1 + wavePulse * .22));
       dancer.root.setAngle(this.moveName === 'sol' ? -movePulse * 7 : this.moveName === 'sag' ? movePulse * 7 : 0);
       dancer.sprite.anims.timeScale = speed;
       dancer.label.setColor(highlighted ? '#fbd28b' : '#fff5dc');
+      dancer.leaderBadge.setAlpha(.75 + Math.sin(now / 260) * .25);
       if (!highlighted) this.effectUntil.delete(p.id);
     });
     if (!moving) this.moveName = null;

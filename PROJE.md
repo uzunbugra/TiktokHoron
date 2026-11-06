@@ -72,6 +72,7 @@ Yorum olayında `type: "comment"` ve `text: "!katil"` kullanılır. WebSocket me
 - [x] Köy haritası, gelin/damat animasyonu, kemençeci ve ad etiketleri (kalabalıkta isteğe bağlı gizleme)
 - [x] Kalp/konfeti efektleri ve kısa süreli görsel tempo değişimi
 - [x] 25/50/100/150 kişi eşiklerinde kademeli canlanan köy meydanı
+- [x] Aktiviteye göre dönüşümlü horonbaşı ve sahne rozeti
 - [ ] Kullanım hakkı doğrulanmış müzik ve ses seviyesi kontrolü
 
 ### Aşama 3 — TikTok bağlantısı
