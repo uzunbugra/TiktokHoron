@@ -55,6 +55,8 @@ Her 40 geçerli olayda meydan açıksa sis, yağmur veya fırtına başlar. Hava
 
 Katılırken `!katil trabzon`, `!katil rize`, `!katil ordu`, `!katil giresun`, `!katil artvin` veya `!katil samsun` yazılabilir. Doğrulanan memleket karakterin üzerinde kendine özgü renkli kuşakla gösterilir; bilinmeyen değerler yok sayılır.
 
+Aktif bir horoncu `!duello` ile on saniyelik kemençe düellosunu başlatır. Her aktif kullanıcı `!a` veya `!b` ile bir kez oy verir. Hedef erken dolarsa sonuç hemen açıklanır; A kazanırsa tempo, B kazanırsa halkanın dönüş yönü beş saniyeliğine değişir.
+
 OBS Browser Source: `http://127.0.0.1:5173/?obs=1`, genişlik **1080**, yükseklik **1920**. Bu görünüm prova kontrollerini gizler. Tarayıcıda tam 1080 × 1920 alan doğrulandı; OBS uygulamasında yayın doğrulaması henüz yapılmadı.
 
 ## API örneği

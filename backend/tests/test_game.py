@@ -139,3 +139,17 @@ def test_join_command_assigns_only_supported_region():
     assert game.players['regional']['region'] == 'rize'
     assert game.apply(event('unknown-region', text='!katil bilinmeyen'))
     assert game.players['unknown-region']['region'] is None
+
+
+def test_duel_accepts_one_vote_per_active_user_and_finishes():
+    game = Game()
+    for i in range(12):
+        game.apply(event(f'duel-{i}'))
+    assert game.apply(event('duel-0', event_id='duel-start', text='!duello'))
+    assert game.snapshot()['duel']['target'] == 3
+    assert game.apply(event('duel-0', event_id='duel-a1', text='!a'))
+    assert not game.apply(event('duel-0', event_id='duel-repeat', text='!b'))
+    assert game.apply(event('duel-1', event_id='duel-a2', text='!a'))
+    assert game.apply(event('duel-2', event_id='duel-b1', text='!b'))
+    assert game.snapshot()['duel']['winner'] == 'a'
+    assert game.snapshot()['duel']['status'] == 'finished'

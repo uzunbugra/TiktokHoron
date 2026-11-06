@@ -80,6 +80,9 @@ document.querySelector('#move-up')!.addEventListener('click', () => send('commen
 document.querySelector('#wave-start')!.addEventListener('click', () => send('comment', '!dalga'));
 document.querySelector('#wave-fire')!.addEventListener('click', () => send('comment', '🔥'));
 document.querySelector('#weather-tempo')!.addEventListener('click', () => send('comment', '!tempo'));
+document.querySelector('#duel-start')!.addEventListener('click', () => send('comment', '!duello'));
+document.querySelector('#duel-a')!.addEventListener('click', () => send('comment', '!a'));
+document.querySelector('#duel-b')!.addEventListener('click', () => send('comment', '!b'));
 document.querySelector('#names')!.addEventListener('change', event => scene.setNames((event.target as HTMLInputElement).checked));
 document.querySelector('#nickname')!.addEventListener('keydown', event => {
   if ((event as KeyboardEvent).key === 'Enter') join();

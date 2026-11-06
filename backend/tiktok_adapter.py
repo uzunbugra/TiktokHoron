@@ -13,7 +13,7 @@ import httpx
 
 LOG = logging.getLogger("horon.tiktok")
 COMMANDS = {"!katil", "!cik", "!sol", "!sag", "!sağ", "!cok", "!çök", "!kalk",
-            "!dalga", "!ates", "!ateş", "🔥", "!tempo"}
+            "!dalga", "!ates", "!ateş", "🔥", "!tempo", "!duello", "!a", "!b"}
 
 
 def _first_value(obj: object | None, *names: str) -> Any:

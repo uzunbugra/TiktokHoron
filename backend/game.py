@@ -12,6 +12,8 @@ WAVE_START_COMMAND = '!dalga'
 WAVE_SUPPORT_COMMANDS = {'🔥', '!ates', '!ateş'}
 WEATHER_CLEAR_COMMAND = '!tempo'
 REGIONS = {'trabzon', 'rize', 'ordu', 'giresun', 'artvin', 'samsun'}
+DUEL_START_COMMAND = '!duello'
+DUEL_VOTES = {'!a': 'a', '!b': 'b'}
 
 
 class Event(BaseModel):
@@ -39,6 +41,9 @@ class Game:
         self.leader = {'id': None, 'revision': 0}
         self.weather_supporters: set[str] = set()
         self.weather = {'kind': 'clear', 'revision': 0, 'support': 0, 'target': 1}
+        self.duel_voters: set[str] = set()
+        self.duel = {'revision': 0, 'status': 'idle', 'a': 0, 'b': 0,
+                     'target': 3, 'winner': None}
         self.seen: OrderedDict[str, None] = OrderedDict()
         self.revision = 0
 
@@ -78,6 +83,19 @@ class Game:
                         'support': 0, 'target': self.weather_target()}
         return True
 
+    def duel_target(self):
+        return max(3, min(20, (len(self.players) + 3) // 4))
+
+    def finish_duel(self, duel_revision: int, advance_revision: bool = True):
+        if self.duel['revision'] != duel_revision or self.duel['status'] != 'active':
+            return False
+        winner = 'a' if self.duel['a'] > self.duel['b'] else 'b' if self.duel['b'] > self.duel['a'] else 'tie'
+        self.duel['status'] = 'finished'
+        self.duel['winner'] = winner
+        if advance_revision:
+            self.revision += 1
+        return True
+
     def snapshot(self):
         move_counts = Counter(self.move_voters.values())
         return {'revision': self.revision, 'players': list(self.players.values()),
@@ -86,6 +104,7 @@ class Game:
                 'wave': dict(self.wave),
                 'leader': dict(self.leader),
                 'weather': dict(self.weather),
+                'duel': dict(self.duel),
                 'vote': {'counts': {name: move_counts.get(name, 0)
                                     for name in ('sol', 'sag', 'cok', 'kalk')},
                          'target': self.move_vote_target()},
@@ -109,6 +128,7 @@ class Game:
             self.move_voters.pop(uid, None)
             self.wave_supporters.discard(uid)
             self.weather_supporters.discard(uid)
+            self.duel_voters.discard(uid)
             self.activity.pop(uid, None)
             if self.waiting and len(self.players) < self.capacity:
                 next_id = next(iter(self.waiting))
@@ -145,6 +165,20 @@ class Game:
                 self.weather_supporters.clear()
                 self.weather = {'kind': 'clear', 'revision': self.weather['revision'] + 1,
                                 'support': 0, 'target': self.weather_target()}
+        elif event.type == 'comment' and text == DUEL_START_COMMAND:
+            if uid not in self.players:
+                return False
+            self.duel_voters.clear()
+            self.duel = {'revision': self.duel['revision'] + 1, 'status': 'active',
+                         'a': 0, 'b': 0, 'target': self.duel_target(), 'winner': None}
+        elif event.type == 'comment' and text in DUEL_VOTES:
+            if uid not in self.players or self.duel['status'] != 'active' or uid in self.duel_voters:
+                return False
+            self.duel_voters.add(uid)
+            choice = DUEL_VOTES[text]
+            self.duel[choice] += 1
+            if self.duel['a'] + self.duel['b'] >= self.duel['target']:
+                self.finish_duel(self.duel['revision'], advance_revision=False)
         elif event.type == 'gift' or command == '!katil':
             player = self.players.get(uid) or self.waiting.get(uid)
             if player is None:

@@ -14,7 +14,8 @@ export class HoronScene extends Phaser.Scene {
   private state: GameState = { revision: 0, players: [], waiting: 0, capacity: 200, leaderboard: [],
     move: { name: null, revision: 0 }, vote: { counts: { sol: 0, sag: 0, cok: 0, kalk: 0 }, target: 1 },
     wave: { revision: 0, support: 0, target: 1, status: 'idle' }, leader: { id: null, revision: 0 },
-    weather: { kind: 'clear', revision: 0, support: 0, target: 1 } };
+    weather: { kind: 'clear', revision: 0, support: 0, target: 1 },
+    duel: { revision: 0, status: 'idle', a: 0, b: 0, target: 3, winner: null } };
   private ringGuide!: Phaser.GameObjects.Ellipse;
   private festivalLayers: FestivalObject[][] = [[], [], [], []];
   private festivalStatus!: Phaser.GameObjects.Text;
@@ -29,6 +30,7 @@ export class HoronScene extends Phaser.Scene {
   private toast!: Phaser.GameObjects.Text;
   private voteStatus!: Phaser.GameObjects.Text;
   private waveStatus!: Phaser.GameObjects.Text;
+  private duelStatus!: Phaser.GameObjects.Text;
   private toastUntil = 0;
   private boostUntil = 0;
   private rotation = 0;
@@ -45,6 +47,10 @@ export class HoronScene extends Phaser.Scene {
   private waveCompletionRevision = 0;
   private leaderRevision = 0;
   private weatherRevision = 0;
+  private duelRevision = 0;
+  private duelFinishedRevision = 0;
+  private duelWinner: 'a' | 'b' | 'tie' | null = null;
+  private duelUntil = 0;
 
   constructor() { super('horon'); }
 
@@ -69,6 +75,7 @@ export class HoronScene extends Phaser.Scene {
     this.couple.forEach((d, i) => { d.root.setPosition(250 + i * 44, 591).setDepth(591); d.root.setScale(1.15); });
     this.musician = this.makeDancer({ id: 'musician', nickname: 'Kemençeci', score: 0 }, 8);
     this.musician.root.setPosition(102, 350).setDepth(350);
+    this.duelStatus = this.add.text(270, 698, '', { fontFamily: font, fontSize: '10px', color: '#dcb7ef', backgroundColor: '#42354c', padding: { x: 8, y: 5 } }).setOrigin(.5).setDepth(1100);
     this.waveStatus = this.add.text(270, 727, '', { fontFamily: font, fontSize: '10px', color: '#f0b172', backgroundColor: '#3e4034', padding: { x: 8, y: 5 } }).setOrigin(.5).setDepth(1100);
     this.voteStatus = this.add.text(270, 756, '', { fontFamily: font, fontSize: '10px', color: '#e4c987', backgroundColor: '#30483d', padding: { x: 8, y: 5 } }).setOrigin(.5).setDepth(1100);
     this.add.text(270, 789, 'SOHBETE !katil YAZ · HORONA KATIL', { fontFamily: font, fontSize: '12px', color: '#fff1cd', backgroundColor: '#3c5142', padding: { x: 12, y: 8 } }).setOrigin(.5).setDepth(1100);
@@ -130,6 +137,18 @@ export class HoronScene extends Phaser.Scene {
       this.toast.setText(weatherNames[state.weather.kind]).setVisible(true);
       this.toastUntil = Date.now() + 2500;
     }
+    if (state.duel.revision > this.duelRevision) {
+      this.duelRevision = state.duel.revision;
+      this.toast.setText('Kemençe düellosu · A mı B mi?').setVisible(true);
+      this.toastUntil = Date.now() + 2200;
+    }
+    if (state.duel.status === 'finished' && state.duel.revision > this.duelFinishedRevision) {
+      this.duelFinishedRevision = state.duel.revision;
+      this.duelWinner = state.duel.winner;
+      this.duelUntil = Date.now() + 5000;
+      this.toast.setText(state.duel.winner === 'tie' ? 'Kemençe düellosu berabere!' : `Kemençe ${state.duel.winner?.toUpperCase()} kazandı!`).setVisible(true);
+      this.toastUntil = Date.now() + 2500;
+    }
     const ids = new Set(state.players.map(p => p.id));
     for (const [id, dancer] of this.dancers) {
       if (!ids.has(id)) { dancer.root.destroy(); this.dancers.delete(id); this.effectUntil.delete(id); }
@@ -155,6 +174,7 @@ export class HoronScene extends Phaser.Scene {
     const voteTotal = votes.sol + votes.sag + votes.cok + votes.kalk;
     this.voteStatus.setText(voteTotal ? `OY: SOL ${votes.sol} · SAĞ ${votes.sag} · ÇÖK ${votes.cok} · KALK ${votes.kalk}   /${state.vote.target}` : '!sol  !sağ  !çök  !kalk');
     this.waveStatus.setText(state.wave.status === 'active' ? `HORON DALGASI 🔥  ${state.wave.support}/${state.wave.target}` : state.wave.status === 'success' ? 'DALGA TAMAMLANDI ✦' : state.wave.status === 'failed' ? 'DALGA SÖNDÜ · !dalga ile yeniden' : '!dalga ile halkayı harekete geçir');
+    this.duelStatus.setText(state.duel.status === 'active' ? `KEMENÇE DÜELLOSU  A ${state.duel.a} · B ${state.duel.b}  /${state.duel.target}` : state.duel.status === 'finished' ? `DÜELLO: ${state.duel.winner === 'tie' ? 'BERABERE' : `${state.duel.winner?.toUpperCase()} KAZANDI`}` : '!duello  ·  !a / !b');
     this.ranking.setText(state.leaderboard.length ? state.leaderboard.map((p, i) => `${i + 1}. ${p.nickname.slice(0, 19).padEnd(19)} ${p.score} ✦`).join('\n') : 'İlk destekçi sen ol. İyi ki geldin!');
   }
 
@@ -291,8 +311,11 @@ export class HoronScene extends Phaser.Scene {
     const now = Date.now();
     const boost = now < this.boostUntil;
     const weatherSpeed = this.state.weather.kind === 'firtina' ? .8 : this.state.weather.kind === 'sis' ? .88 : this.state.weather.kind === 'yagmur' ? .94 : 1;
-    const speed = (boost ? 1.6 : 1) * weatherSpeed;
-    this.rotation += Math.min(delta, 50) / 20000 * speed;
+    const duelActive = now < this.duelUntil;
+    const duelSpeed = duelActive && this.duelWinner === 'a' ? 1.25 : 1;
+    const duelDirection = duelActive && this.duelWinner === 'b' ? -1 : 1;
+    const speed = (boost ? 1.6 : 1) * weatherSpeed * duelSpeed;
+    this.rotation += Math.min(delta, 50) / 20000 * speed * duelDirection;
     this.tempo.setText(boost ? 'TEMPO 1.6× ✦' : 'TEMPO 1×');
     if (now > this.toastUntil) this.toast.setVisible(false);
     const count = this.state.players.length;

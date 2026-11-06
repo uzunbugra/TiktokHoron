@@ -75,6 +75,7 @@ Yorum olayında `type: "comment"` ve `text: "!katil"` kullanılır. WebSocket me
 - [x] Aktiviteye göre dönüşümlü horonbaşı ve sahne rozeti
 - [x] Sis/yağmur/fırtına katmanları ve `!tempo` ile toplu hava açma
 - [x] Doğrulanan Karadeniz memleketleri için karakter kuşağı renkleri
+- [x] On saniyelik A/B kemençe düellosu ve kazanan ritim etkisi
 - [ ] Kullanım hakkı doğrulanmış müzik ve ses seviyesi kontrolü
 
 ### Aşama 3 — TikTok bağlantısı

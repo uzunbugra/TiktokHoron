@@ -11,6 +11,7 @@ export type GameState = {
   wave: { revision: number; support: number; target: number; status: 'idle' | 'active' | 'success' | 'failed' };
   leader: { id: string | null; revision: number };
   weather: { kind: 'clear' | 'sis' | 'yagmur' | 'firtina'; revision: number; support: number; target: number };
+  duel: { revision: number; status: 'idle' | 'active' | 'finished'; a: number; b: number; target: number; winner: 'a' | 'b' | 'tie' | null };
 };
 export type Gift = {
   type: 'gift';

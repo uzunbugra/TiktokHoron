@@ -26,6 +26,13 @@ async def expire_wave(wave_revision: int):
             broadcast({'state': game.snapshot(), 'effect': None})
 
 
+async def finish_duel(duel_revision: int):
+    await asyncio.sleep(10)
+    async with lock:
+        if game.finish_duel(duel_revision):
+            broadcast({'state': game.snapshot(), 'effect': None})
+
+
 @app.get('/health')
 async def health():
     return {'status': 'ok', 'mode': 'simulation', 'revision': game.revision}
@@ -42,6 +49,8 @@ async def events(event: Event, x_admin_token: str = Header(default='')):
             broadcast(message)
             if event.type == 'comment' and event.text.strip().casefold() == '!dalga':
                 asyncio.create_task(expire_wave(game.wave['revision']))
+            if event.type == 'comment' and event.text.strip().casefold() == '!duello':
+                asyncio.create_task(finish_duel(game.duel['revision']))
     return {'applied': applied, 'revision': game.revision}
 
 
