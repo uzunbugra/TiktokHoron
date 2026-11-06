@@ -17,7 +17,7 @@ export class HoronScene extends Phaser.Scene {
     weather: { kind: 'clear', revision: 0, support: 0, target: 1 },
     duel: { revision: 0, status: 'idle', a: 0, b: 0, target: 3, winner: null },
     ring: { revision: 0, status: 'intact', support: 0, target: 1 }, photo: { revision: 0, reason: null },
-    raid: { revision: 0, name: null, remaining: 0 } };
+    raid: { revision: 0, name: null, remaining: 0 }, music: { revision: 0, layer: null } };
   private ringGuide!: Phaser.GameObjects.Ellipse;
   private festivalLayers: FestivalObject[][] = [[], [], [], []];
   private festivalStatus!: Phaser.GameObjects.Text;
@@ -59,6 +59,7 @@ export class HoronScene extends Phaser.Scene {
   private photoUntil = 0;
   private photoFrame!: Phaser.GameObjects.Container;
   private raidRevision = 0;
+  private musicRevision = 0;
 
   constructor() { super('horon'); }
 
@@ -182,6 +183,14 @@ export class HoronScene extends Phaser.Scene {
       this.raidRevision = state.raid.revision;
       this.toast.setText(`${state.raid.name?.toUpperCase()} meydana geliyor!`).setVisible(true);
       this.toastUntil = Date.now() + 3000;
+    }
+    if (state.music.revision > this.musicRevision) {
+      this.musicRevision = state.music.revision;
+      const names = { alkis: 'Alkış', davul: 'Davul', tulum: 'Tulum' };
+      if (state.music.layer) {
+        this.toast.setText(`${names[state.music.layer]} ritme katıldı!`).setVisible(true);
+        this.toastUntil = Date.now() + 2200;
+      }
     }
     const ids = new Set(state.players.map(p => p.id));
     for (const [id, dancer] of this.dancers) {

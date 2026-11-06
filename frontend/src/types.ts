@@ -15,6 +15,7 @@ export type GameState = {
   ring: { revision: number; status: 'intact' | 'broken'; support: number; target: number };
   photo: { revision: number; reason: string | null };
   raid: { revision: number; name: string | null; remaining: number };
+  music: { revision: number; layer: 'alkis' | 'davul' | 'tulum' | null };
 };
 export type Gift = {
   type: 'gift';

@@ -198,3 +198,13 @@ def test_guest_raid_tags_only_next_ten_new_players():
     assert game.players['guest-10']['raid'] is None
     assert game.snapshot()['raid']['remaining'] == 0
     assert not game.apply(event('outsider', event_id='bad-raid', text='!baskin ekip'))
+
+
+def test_active_player_can_switch_procedural_music_layer():
+    game = Game()
+    game.apply(event('musician'))
+    assert game.apply(event('musician', event_id='drum', text='!davul'))
+    assert game.snapshot()['music'] == {'revision': 1, 'layer': 'davul'}
+    assert game.apply(event('musician', event_id='pipe', text='!tulum'))
+    assert game.snapshot()['music'] == {'revision': 2, 'layer': 'tulum'}
+    assert not game.apply(event('outsider', event_id='clap', text='👏'))

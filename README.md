@@ -65,6 +65,8 @@ Kullanıcı ziyaretleri ve aktivitesi `backend/horon.db` SQLite veritabanında k
 
 Aktif bir horoncu `!baskin ekip adı` yazarak misafir grubunu duyurabilir. Sonraki 10 yeni katılımcı bu grubun rozetiyle sahnenin iki kenarından toplu giriş yapar; mevcut oyuncular sonradan gruba yazılmaz.
 
+**Sesi aç** düğmesi tarayıcıda prosedürel üretilen temel kemençe ritmini başlatır. Aktif horoncular `👏`/`!alkış`, `!davul` veya `!tulum` ile sekiz saniyeliğine ilgili ses katmanını ritme ekler. Harici ses dosyası kullanılmaz.
+
 OBS Browser Source: `http://127.0.0.1:5173/?obs=1`, genişlik **1080**, yükseklik **1920**. Bu görünüm prova kontrollerini gizler. Tarayıcıda tam 1080 × 1920 alan doğrulandı; OBS uygulamasında yayın doğrulaması henüz yapılmadı.
 
 ## API örneği
@@ -98,7 +100,7 @@ npm run build
 - Canlı oyun, kuyruk ve oturum skoru bellektedir; ziyaret/aktivite profilleri SQLite'ta kalıcıdır.
 - Yerel geliştirme içindir. Tek backend worker kullanın; portları internete açmayın. Prova paneli geliştirme token'ını kullanır. `ADMIN_TOKEN` değiştirilirse panel yerine özel başlıklı API isteği kullanın.
 - TikTok adaptörü ve hediye serisi normalizasyonu uygulandı ancak gerçek yayında henüz doğrulanmadı. SQLite, yönetim paneli, hız sınırı ve kalıcı olay tekilleştirmesi sonraki aşamalardır.
-- Karakterler özgün, kodla çizilmiş altı karelik pixel sprite sheet'leridir. Köy haritası ve efektler de kodla üretilir; harici görsel veya font indirilmez. Müzik henüz eklenmedi.
+- Karakterler özgün, kodla çizilmiş altı karelik pixel sprite sheet'leridir. Köy haritası, efektler ve prosedürel sesler kodla üretilir; harici görsel, font veya ses indirilmez.
 - Tek büyüyen halkada 200 karakter desteği eklendi; uzun süreli FPS, OBS ve tam kapasite görsel testi ayrıca yapılacak.
 
 ## Dizinler

@@ -79,7 +79,7 @@ Yorum olayında `type: "comment"` ve `text: "!katil"` kullanılır. WebSocket me
 - [x] Etkinlik eşiğinde halka kopması ve `🤝` / `!birleş` ile toplu onarım
 - [x] Kalabalık eşikleri/büyük kutlamada fotoğraf anı ve PNG hatıra karesi
 - [x] `!baskin [ekip]` ile sonraki 10 yeni oyuncuya misafir rozeti ve kenardan giriş
-- [ ] Kullanım hakkı doğrulanmış müzik ve ses seviyesi kontrolü
+- [x] Harici dosyasız prosedürel kemençe ritmi ve sohbetle alkış/davul/tulum katmanları
 
 ### Aşama 3 — TikTok bağlantısı
 

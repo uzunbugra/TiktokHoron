@@ -1,9 +1,11 @@
 import Phaser from 'phaser';
 import { HoronScene } from './scene';
+import { HoronSound } from './sound';
 import type { GameMessage } from './types';
 import './style.css';
 
 const scene = new HoronScene();
+const sound = new HoronSound();
 const game = new Phaser.Game({ type: Phaser.AUTO, parent: 'game', width: 540, height: 960,
   pixelArt: true, backgroundColor: '#172f33',
   render: { preserveDrawingBuffer: true },
@@ -24,6 +26,7 @@ function connect() {
   socket.onmessage = message => {
     const data: GameMessage = JSON.parse(message.data);
     scene.sync(data.state);
+    sound.setMusic(data.state.music);
     if (data.effect) scene.gift(data.effect);
   };
   socket.onclose = () => {
@@ -91,6 +94,10 @@ document.querySelector('#raid-start')!.addEventListener('click', () => {
   if (!name) { notice.textContent = 'Misafir ekip adını gir.'; return; }
   send('comment', `!baskin ${name}`);
 });
+document.querySelector('#sound-enable')!.addEventListener('click', () => { sound.enable(); notice.textContent = 'Prosedürel kemençe sesi açıldı.'; });
+document.querySelector('#music-clap')!.addEventListener('click', () => send('comment', '👏'));
+document.querySelector('#music-drum')!.addEventListener('click', () => send('comment', '!davul'));
+document.querySelector('#music-pipe')!.addEventListener('click', () => send('comment', '!tulum'));
 document.querySelector('#names')!.addEventListener('change', event => scene.setNames((event.target as HTMLInputElement).checked));
 document.querySelector('#nickname')!.addEventListener('keydown', event => {
   if ((event as KeyboardEvent).key === 'Enter') join();

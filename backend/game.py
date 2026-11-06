@@ -17,6 +17,8 @@ DUEL_VOTES = {'!a': 'a', '!b': 'b'}
 RING_REPAIR_COMMANDS = {'🤝', '!birles', '!birleş'}
 PHOTO_MILESTONES = {50, 100, 150, 200}
 RAID_COMMAND = '!baskin'
+MUSIC_COMMANDS = {'👏': 'alkis', '!alkis': 'alkis', '!alkış': 'alkis',
+                  '!davul': 'davul', '!tulum': 'tulum'}
 
 
 class Event(BaseModel):
@@ -51,6 +53,7 @@ class Game:
         self.ring = {'revision': 0, 'status': 'intact', 'support': 0, 'target': 1}
         self.photo = {'revision': 0, 'reason': None}
         self.raid = {'revision': 0, 'name': None, 'remaining': 0}
+        self.music = {'revision': 0, 'layer': None}
         self.seen: OrderedDict[str, None] = OrderedDict()
         self.revision = 0
 
@@ -123,6 +126,7 @@ class Game:
                 'ring': dict(self.ring),
                 'photo': dict(self.photo),
                 'raid': dict(self.raid),
+                'music': dict(self.music),
                 'vote': {'counts': {name: move_counts.get(name, 0)
                                     for name in ('sol', 'sag', 'cok', 'kalk')},
                          'target': self.move_vote_target()},
@@ -213,6 +217,11 @@ class Game:
                 return False
             self.raid = {'revision': self.raid['revision'] + 1,
                          'name': raid_name, 'remaining': 10}
+        elif event.type == 'comment' and text in MUSIC_COMMANDS:
+            if uid not in self.players:
+                return False
+            self.music = {'revision': self.music['revision'] + 1,
+                          'layer': MUSIC_COMMANDS[text]}
         elif event.type == 'gift' or command == '!katil':
             previous_count = len(self.players)
             player = self.players.get(uid) or self.waiting.get(uid)
