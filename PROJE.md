@@ -32,7 +32,7 @@ Python/FastAPI oyun durumunun tek kaynağıdır. Phaser 3 + TypeScript sadece sa
 | Tekrar eden olay kimliği | İkinci kez uygulama |
 | Yayın bağlantısı kopması | Sahneyi koru; adaptör tekrar bağlanmayı denesin |
 
-Görünen kullanıcı adı yerine sabit kullanıcı kimliği esas alınır. Adlar uzunluk sınırıyla canvas metni olarak çizilir. Liderlik tablosu oturumdaki en çok destek veren üç kişiyi gösterir; ayrılmak destek puanını silmez. İlk prototipte bütün demo hediyeleri aynı büyüme efektini kullanır. Gül için kalp, yüksek değerli hediye için kutlama ve geçici hızlanma daha sonra eklenecek. Gerçek hediye kuralları isim yerine doğrulanmış `gift_id` ile eşlenecek.
+Görünen kullanıcı adı yerine sabit kullanıcı kimliği esas alınır. Adlar uzunluk sınırıyla canvas metni olarak çizilir. Liderlik tablosu oturumdaki en çok destek veren üç kişiyi gösterir; ayrılmak destek puanını silmez. v0.2'de demo gül kalp, demo kutlama veya en az 10 puan değerindeki hediye konfeti ve 6,5 saniyelik 1,6× görsel tempo artışı sağlar. Gerçek hediye kuralları isim yerine doğrulanmış `gift_id` ile eşlenecek.
 
 ## Olay sözleşmesi
 
@@ -66,9 +66,9 @@ Yorum olayında `type: "comment"` ve `text: "!katil"` kullanılır. WebSocket me
 
 ### Aşama 2 — Görsel kalite
 
-- [ ] Özgün/lisanslı 4–6 kare horon sprite sheet'leri
-- [ ] Köy haritası, gelin/damat animasyonu, kemençeci ve okunabilir ad etiketleri
-- [ ] Kalp/konfeti efektleri ve kısa süreli tempo değişimi
+- [x] Özgün, kodla üretilen altı kare horon sprite sheet'leri
+- [x] Köy haritası, gelin/damat animasyonu, kemençeci ve ad etiketleri (kalabalıkta isteğe bağlı gizleme)
+- [x] Kalp/konfeti efektleri ve kısa süreli görsel tempo değişimi
 - [ ] Kullanım hakkı doğrulanmış müzik ve ses seviyesi kontrolü
 
 ### Aşama 3 — TikTok bağlantısı
@@ -105,7 +105,7 @@ TikTokLive üçüncü taraf bağlantı seçeneğidir; resmi TikTok desteği vars
 
 ## Bir sonraki iş
 
-Yerel provayı birlikte değerlendirip görsel yönü netleştirmek; ardından özgün sprite/harita ve gerçek TikTok adaptörüne geçmek.
+TikTok adaptörünü geliştirip hediye seri bildirimlerini güvenilir biçimde normalize etmek; ardından gerçek yayın erişimiyle yorum/hediye testini yapmak. Müzik, OBS uygulama provası ve uzun süreli performans testi de açık işlerdir.
 
 ## İlk sürüm doğrulaması — 6 Kasım 2026
 
@@ -114,3 +114,11 @@ Yerel provayı birlikte değerlendirip görsel yönü netleştirmek; ardından �
 - Tarayıcı: katılım ve sahte hediye düğmeleriyle karakter, efekt ve sıralama görüntülendi.
 - TestClient, kullanılan httpx sürümü için geçiş uyarısı veriyor; testler başarılı.
 - Gerçek TikTok yayını, OBS ve 50 karakter FPS ölçümü henüz doğrulanmadı.
+
+## v0.2 doğrulaması — 6 Kasım 2026
+
+- Phaser sahnesi özgün pixel köy haritası, dokuz karakter görünümü ve altı kare animasyonlarla yenilendi. Görsel/karakter kaynakları `frontend/src/art.ts`, sahne davranışları `scene.ts` içinde.
+- 50 karakter üç tam halkada görüntülendi. 1280 × 900 masaüstü tarayıcıdaki kısa kontrolde gösterge yaklaşık 120 FPS idi; bu, sürekli performans garantisi veya OBS ölçümü değildir.
+- Katılım, sahte gül, konfeti/tempo artışı, toplu prova ekleme ve bu sayfadan eklenen prova karakterlerini çıkarma tarayıcıda denendi.
+- 390 px mobil görünümde yatay taşma yok. OBS görünümü 1080 × 1920 viewport'ta tam alanı dolduruyor ve paneli gizliyor.
+- Gerçek TikTok, müzik ve OBS uygulaması üzerinden yayın testi henüz yapılmadı.

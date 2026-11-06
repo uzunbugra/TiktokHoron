@@ -1,3 +1,42 @@
 <!doctype html>
-<html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Horon LIVE</title></head>
-<body><main id="game"></main><aside id="controls"><strong>Yayın provası</strong><input id="nickname" aria-label="Kullanıcı adı" placeholder="Kullanıcı adı" value="Horoncu"><button id="join">Horona katıl</button><button id="gift">Hediye gönder ✦</button><button id="leave">Ayrıl</button><p id="notice">Canlı TikTok bağlantısı henüz bağlı değil.</p></aside><script type="module" src="/src/main.ts"></script></body></html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#102526">
+    <meta name="description" content="Horon LIVE — Karadeniz köy düğününde interaktif yayın provası.">
+    <title>Horon LIVE · Köy düğünü</title>
+  </head>
+  <body>
+    <main class="workspace">
+      <section class="stage" aria-label="Dikey horon oyun sahnesi">
+        <div class="stage-top"><span>YAYIN SAHNESİ</span><span>9:16 · 1080 × 1920</span></div>
+        <div id="game" role="img" aria-label="Pixel art köy düğünü. İzleyiciler gelin ve damadın çevresinde horon çekiyor."></div>
+        <div class="stage-bottom"><span><i></i> YEREL PROVA</span><span id="fps" aria-label="Saniyedeki kare sayısı">— FPS</span></div>
+      </section>
+      <aside id="controls">
+        <header><div class="eyebrow">HORON LIVE / STÜDYO</div><h1>Düğün başlasın.</h1><p class="intro">Bir isim seç, halkaya katıl.<br>Gerisini kemençeye bırak.</p></header>
+        <div id="connection" class="connection" role="status">Bağlanıyor…</div>
+        <section class="panel" aria-labelledby="participant-title">
+          <h2 id="participant-title">01 <span>Horona katıl</span></h2>
+          <label for="nickname">Kullanıcı adı</label>
+          <input id="nickname" name="nickname" maxlength="32" autocomplete="off" placeholder="Örn. Karadenizli" value="Horoncu">
+          <div class="join-row"><button id="join" class="primary">Halkaya katıl <span>↗</span></button><button id="leave" class="quiet">Ayrıl</button></div>
+        </section>
+        <section class="panel" aria-labelledby="gift-title">
+          <h2 id="gift-title">02 <span>Düğüne renk kat</span></h2>
+          <div class="gift-row"><button id="rose" class="gift"><span class="gift-icon">♥</span><strong>Bir gül</strong><small>Kalpler uçuşsun</small></button><button id="celebrate" class="gift"><span class="gift-icon gold">✦</span><strong>Kutlama</strong><small>Konfeti + hızlı horon</small></button></div>
+          <p class="hint">Prova hediyeleridir, ücret alınmaz.</p>
+        </section>
+        <section class="panel" aria-labelledby="rehearsal-title">
+          <h2 id="rehearsal-title">03 <span>Yayın provası</span></h2>
+          <button id="crowd" class="outline">+ 10 prova horoncusu ekle</button>
+          <div class="options"><label class="check"><input id="names" type="checkbox" checked> İsimleri göster</label><button id="clear-demo" class="text-button">Provayı temizle</button></div>
+          <p id="notice" role="status" aria-live="polite">Katılım ve hediyeler simülasyon modunda. TikTok henüz bağlı değil.</p>
+        </section>
+        <footer><a href="/?obs=1" target="_blank" rel="noopener">OBS sahnesini aç <span>↗</span></a><span>Ücretsiz katılım · !katil / !cik</span></footer>
+      </aside>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
