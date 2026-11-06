@@ -2,7 +2,7 @@
 
 Kendi TikTok yayınımız için yerelde çalışan, 2D pixel art horon oyunu. İzleyiciler `!katil` ile halkaya katılır, `!cik` ile ayrılır; hediyeler kozmetik efekt ve destek puanı sağlar.
 
-**Durum:** v0.2 — animasyonlu köy düğünü ve yayın prova stüdyosu. Gerçek TikTok bağlantısı henüz uygulanmadı. Proje kapsamı, mimari ve kabul kriterleri: [PROJE.md](PROJE.md).
+**Durum:** v0.3 — animasyonlu köy düğünü, yayın prova stüdyosu ve deneysel TikTokLive adaptörü. Gerçek yayında uçtan uca test henüz yapılmadı. Proje kapsamı, mimari ve kabul kriterleri: [PROJE.md](PROJE.md).
 
 ## Çalıştırma
 
@@ -28,7 +28,20 @@ npm run dev
 
 Oyunu <http://127.0.0.1:5173> adresinde açın. Kullanıcı adı girip **Halkaya katıl** ve **Ayrıl** düğmelerini deneyin. **Bir gül** kalp efekti, **Kutlama** konfeti ve 6,5 saniyelik 1,6× horon temposu sağlar. Hediyeler provadır; ücret alınmaz.
 
-**+ 10 prova horoncusu ekle** ile 50 kişilik sahneyi deneyebilirsiniz. Kapasite aşılırsa yeni kişiler kuyruğa girer. **Provayı temizle** yalnızca bu sayfa açıldıktan sonra bu düğmeyle eklediğiniz karakterleri çıkarır; kişisel katılım ve destek puanları korunur. Sayfayı yenilemek bu yerel prova listesini sıfırlar. **İsimleri göster** sahnedeki izleyici etiketlerini açıp kapatır. FPS göstergesi kısa görsel kontrol içindir; uzun süreli performans ölçümü değildir.
+## TikTok LIVE adaptörü (deneysel)
+
+Backend çalışırken ayrı bir terminalde yayıncı kullanıcı adıyla adaptörü başlatın:
+
+```sh
+cd backend
+python tiktok_adapter.py @kullanici_adi
+```
+
+`ADMIN_TOKEN` backend ile aynı olmalıdır. Farklı adres için `HORON_API_URL` kullanılabilir. Adaptör yalnızca `!katil`, `!cik` ve tamamlanmış hediye olaylarını gönderir. Seri hediyelerin ara bildirimleri atlanır; final bildirimindeki kümülatif adet bir kez sayılır. Bağlantı koparsa 2 saniyeden başlayan üstel beklemeyle yeniden bağlanır.
+
+TikTokLive resmi olmayan, tersine mühendislik tabanlı bir istemcidir. TikTok değişiklikleri bağlantıyı bozabilir; ilk gerçek yayından önce yorum, tek hediye ve seri hediye ayrı ayrı doğrulanmalıdır.
+
+**+ 25 prova horoncusu ekle** ile 200 kişilik sahneyi deneyebilirsiniz. Her 50 kişide yeni bir horon halkası açılır; sahne en fazla dört bağımsız halkayı aynı anda gösterir. Kapasite aşılırsa yeni kişiler kuyruğa girer. **Provayı temizle** yalnızca bu sayfa açıldıktan sonra bu düğmeyle eklediğiniz karakterleri çıkarır; kişisel katılım ve destek puanları korunur. Sayfayı yenilemek bu yerel prova listesini sıfırlar. **İsimleri göster** sahnedeki izleyici etiketlerini açıp kapatır. FPS göstergesi kısa görsel kontrol içindir; uzun süreli performans ölçümü değildir.
 
 OBS Browser Source: `http://127.0.0.1:5173/?obs=1`, genişlik **1080**, yükseklik **1920**. Bu görünüm prova kontrollerini gizler. Tarayıcıda tam 1080 × 1920 alan doğrulandı; OBS uygulamasında yayın doğrulaması henüz yapılmadı.
 
@@ -62,9 +75,9 @@ npm run build
 
 - Oyun ve skorlar bellekte; backend yeniden başlayınca sıfırlanır.
 - Yerel geliştirme içindir. Tek backend worker kullanın; portları internete açmayın. Prova paneli geliştirme token'ını kullanır. `ADMIN_TOKEN` değiştirilirse panel yerine özel başlıklı API isteği kullanın.
-- TikTok adaptörü, hediye serisi birleştirme, SQLite, yönetim paneli, hız sınırı ve kalıcı olay tekilleştirmesi sonraki aşamalardır.
+- TikTok adaptörü ve hediye serisi normalizasyonu uygulandı ancak gerçek yayında henüz doğrulanmadı. SQLite, yönetim paneli, hız sınırı ve kalıcı olay tekilleştirmesi sonraki aşamalardır.
 - Karakterler özgün, kodla çizilmiş altı karelik pixel sprite sheet'leridir. Köy haritası ve efektler de kodla üretilir; harici görsel veya font indirilmez. Müzik henüz eklenmedi.
-- 50 karakterle kısa tarayıcı provası yapıldı. Uzun süreli FPS, OBS ve gerçek yayın testi ayrıca yapılacak.
+- 200 karakter ve dört halka desteği eklendi; uzun süreli FPS, OBS ve tam kapasite görsel testi ayrıca yapılacak.
 
 ## Dizinler
 

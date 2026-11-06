@@ -58,5 +58,14 @@ def test_100_events_and_snapshot_after_reconnect():
             assert result.status_code == 200
         with client.websocket_connect('/ws/game') as ws:
             state = ws.receive_json()['state']
-            assert len(state['players']) == 50
-            assert state['waiting'] == 50
+            assert len(state['players']) == 100
+            assert state['waiting'] == 0
+
+
+def test_default_capacity_supports_four_full_rings():
+    game = Game()
+    for i in range(201):
+        game.apply(event(f'ring-{i}'))
+    assert game.capacity == 200
+    assert len(game.players) == 200
+    assert list(game.waiting) == ['ring-200']

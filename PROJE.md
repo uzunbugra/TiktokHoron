@@ -6,7 +6,7 @@ Başlangıç tarihi: 6 Kasım 2026. Kaynak: [paylaşılan proje konuşması](htt
 
 Tek yayıncı olarak kendi TikTok LIVE yayınımızda kullanacağımız, MacBook üzerinde çalışan bir horon oyunu geliştirmek. Görsel yön: Karadeniz köy düğünü, ortada gelin/damat, çevrede kullanıcı adları görünen 2D pixel art dansçılar. Ücretsiz sohbet katılımı her zaman açık; hediyeler görsel kutlama ve destek sıralaması sağlar.
 
-İlk sürümde çoklu yayıncı, SaaS, üyelik, ödeme sistemi ve bulut dağıtımı yok. Hedef 50 eş zamanlı karakter, 1080 × 1920 dikey OBS sahnesi ve 60 FPS; yük altında alt sınır 30 FPS. Bunlar ölçülmesi gereken hedeflerdir.
+İlk sürümde çoklu yayıncı, SaaS, üyelik, ödeme sistemi ve bulut dağıtımı yok. Hedef dört bağımsız halkada 200 eş zamanlı karakter, 1080 × 1920 dikey OBS sahnesi ve 60 FPS; yük altında alt sınır 30 FPS. Bunlar ölçülmesi gereken hedeflerdir.
 
 ## Mimari
 
@@ -62,7 +62,7 @@ Yorum olayında `type: "comment"` ve `text: "!katil"` kullanılır. WebSocket me
 - [x] WebSocket durum aktarımı ve istemci yeniden bağlantısı
 - [x] Phaser dikey düğün sahnesi ve hareketli geçici pixel karakterler
 - [x] Sahte yorum/hediye kontrol paneli ve OBS görünümü
-- [ ] 50 karakter performans ölçümü ve OBS görüntü kontrolü
+- [ ] 200 karakter/dört halka performans ölçümü ve OBS görüntü kontrolü
 
 ### Aşama 2 — Görsel kalite
 
@@ -73,10 +73,11 @@ Yorum olayında `type: "comment"` ve `text: "!katil"` kullanılır. WebSocket me
 
 ### Aşama 3 — TikTok bağlantısı
 
-- [ ] TikTokLive SDK sürümünü ve gerçek yayın erişimini doğrula
-- [ ] Yorum/hediye adaptörünü aynı olay sözleşmesine bağla
-- [ ] Hediye serisinin ara/toplam bildirimlerini tekilleştir; yalnızca gerçek artışı say
-- [ ] Üstel bekleme ile yeniden bağlanma, bağlantı durumu ve hata günlükleri
+- [x] TikTokLive SDK sürümünü doğrula (7.0.1)
+- [ ] Gerçek yayın erişimini doğrula
+- [x] Yorum/hediye adaptörünü aynı olay sözleşmesine bağla
+- [x] Hediye serisinin ara/toplam bildirimlerini tekilleştir; yalnızca final kümülatif adedi say
+- [x] Üstel bekleme ile yeniden bağlanma, bağlantı durumu ve hata günlükleri
 - [ ] Gerçek yayında en az bir yorum ve hediye testi
 
 TikTokLive üçüncü taraf bağlantı seçeneğidir; resmi TikTok desteği varsayılmaz. SDK ve olay alanları uygulanacağı sırada doğrulanır. TikFinity gerekirse alternatif adaptör olabilir; ilk sürüm bağımlılığı değildir. Kaynak konuşmadaki indirilebilir ZIP bu paylaşımdan alınamadığı için bu repoda prototip sıfırdan oluşturulmuştur.
@@ -90,7 +91,7 @@ TikTokLive üçüncü taraf bağlantı seçeneğidir; resmi TikTok desteği vars
 
 ## Yayına hazır kabul kriterleri
 
-- [ ] 50 karakter hareket ederken 30 FPS altına düşmüyor.
+- [ ] 200 karakter dört halkada hareket ederken 30 FPS altına düşmüyor.
 - [ ] 100 ardışık sahte olayda durum ve WebSocket bağlantısı tutarlı kalıyor.
 - [ ] Aynı hediye ve seri ara bildirimleri çift puan üretmiyor.
 - [ ] Katılma, ayrılma, kuyruk ilerlemesi ve yeniden bağlanma çalışıyor.
@@ -105,7 +106,15 @@ TikTokLive üçüncü taraf bağlantı seçeneğidir; resmi TikTok desteği vars
 
 ## Bir sonraki iş
 
-TikTok adaptörünü geliştirip hediye seri bildirimlerini güvenilir biçimde normalize etmek; ardından gerçek yayın erişimiyle yorum/hediye testini yapmak. Müzik, OBS uygulama provası ve uzun süreli performans testi de açık işlerdir.
+Adaptörü gerçek yayında `!katil`, tek hediye ve seri hediye ile uçtan uca doğrulamak. Ardından olay kimliklerini ve skorları SQLite ile kalıcılaştırmak. Müzik, OBS uygulama provası ve uzun süreli performans testi de açık işlerdir.
+
+## v0.3 doğrulaması — 6 Kasım 2026
+
+- TikTokLive 7.0.1 olay alanlarına göre yorum/hediye adaptörü eklendi.
+- Yalnızca oyun komutları backend'e aktarılıyor; kullanıcı için sayısal TikTok kimliği tercih ediliyor.
+- Seri hediyelerin ara kareleri atlanıyor, final `repeat_count` değeri bir kez işleniyor; kaynak mesaj kimliği yeniden gönderimleri tekilleştiriyor.
+- Sahte TikTok olaylarıyla komut filtresi, ara/final seri davranışı, tek hediye ve kimlik eksikliği test edildi.
+- Gerçek yayın hesabıyla bağlantı ve hediye alanları henüz doğrulanmadı.
 
 ## İlk sürüm doğrulaması — 6 Kasım 2026
 

@@ -3,6 +3,8 @@ from collections import OrderedDict
 from typing import Literal
 from pydantic import BaseModel, Field
 
+DEFAULT_CAPACITY = 200
+
 
 class Event(BaseModel):
     event_id: str = Field(min_length=1, max_length=128)
@@ -16,7 +18,7 @@ class Event(BaseModel):
 
 
 class Game:
-    def __init__(self, capacity: int = 50):
+    def __init__(self, capacity: int = DEFAULT_CAPACITY):
         self.capacity = capacity
         self.players: dict[str, dict] = {}
         self.waiting: dict[str, dict] = {}

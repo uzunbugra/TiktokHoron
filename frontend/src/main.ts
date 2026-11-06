@@ -77,12 +77,12 @@ const demoNames = ['Ayşe', 'Murat', 'Ece', 'Kaan', 'Zeynep', 'Ali', 'Elif', 'De
 const demoIds: string[] = [];
 document.querySelector('#crowd')!.addEventListener('click', () => {
   void withFeedback(async () => {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 25; i++) {
       const id = `demo-${crypto.randomUUID()}`;
-      await post({ type: 'comment', user_id: id, nickname: demoNames[i], text: '!katil' });
+      await post({ type: 'comment', user_id: id, nickname: demoNames[i % demoNames.length], text: '!katil' });
       demoIds.push(id);
     }
-  }, '10 prova horoncusu eklendi. Tekrar basarak kalabalığı artırabilirsin.');
+  }, '25 prova horoncusu eklendi. Her 50 kişide yeni bir halka açılır.');
 });
 document.querySelector('#clear-demo')!.addEventListener('click', () => {
   void withFeedback(async () => {

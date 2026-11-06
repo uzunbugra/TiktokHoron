@@ -3,10 +3,10 @@ import os
 import secrets
 import anyio
 from fastapi import FastAPI, Header, HTTPException, WebSocket, WebSocketDisconnect
-from game import Event, Game
+from game import DEFAULT_CAPACITY, Event, Game
 
 app = FastAPI(title='Horon LIVE — local prototype')
-game = Game()
+game = Game(capacity=int(os.environ.get('GAME_CAPACITY', DEFAULT_CAPACITY)))
 lock = asyncio.Lock()
 clients: set[asyncio.Queue] = set()
 ADMIN_TOKEN = os.environ.get('ADMIN_TOKEN', 'local-dev-token')

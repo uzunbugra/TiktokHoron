@@ -1,5 +1,5 @@
 {
-  "name": "tiktok-horon", "version": "0.2.0", "private": true, "type": "module",
+  "name": "tiktok-horon", "version": "0.3.0", "private": true, "type": "module",
   "scripts": {"dev": "vite --host 127.0.0.1 --port 5173 --strictPort", "build": "tsc --noEmit && vite build"},
   "dependencies": {"phaser": "^3.90.0"},
   "devDependencies": {"typescript": "^5.9.3", "vite": "^7.2.0"}
