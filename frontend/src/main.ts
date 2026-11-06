@@ -82,7 +82,7 @@ document.querySelector('#crowd')!.addEventListener('click', () => {
       await post({ type: 'comment', user_id: id, nickname: demoNames[i % demoNames.length], text: '!katil' });
       demoIds.push(id);
     }
-  }, '25 prova horoncusu eklendi. Her 50 kişide yeni bir halka açılır.');
+  }, '25 prova horoncusu eklendi. Tek horon halkası kalabalıkla birlikte büyür.');
 });
 document.querySelector('#clear-demo')!.addEventListener('click', () => {
   void withFeedback(async () => {

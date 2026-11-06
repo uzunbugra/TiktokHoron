@@ -41,7 +41,7 @@ python tiktok_adapter.py @kullanici_adi
 
 TikTokLive resmi olmayan, tersine mühendislik tabanlı bir istemcidir. TikTok değişiklikleri bağlantıyı bozabilir; ilk gerçek yayından önce yorum, tek hediye ve seri hediye ayrı ayrı doğrulanmalıdır.
 
-**+ 25 prova horoncusu ekle** ile 200 kişilik sahneyi deneyebilirsiniz. Her 50 kişide yeni bir horon halkası açılır; sahne en fazla dört bağımsız halkayı aynı anda gösterir. Kapasite aşılırsa yeni kişiler kuyruğa girer. **Provayı temizle** yalnızca bu sayfa açıldıktan sonra bu düğmeyle eklediğiniz karakterleri çıkarır; kişisel katılım ve destek puanları korunur. Sayfayı yenilemek bu yerel prova listesini sıfırlar. **İsimleri göster** sahnedeki izleyici etiketlerini açıp kapatır. FPS göstergesi kısa görsel kontrol içindir; uzun süreli performans ölçümü değildir.
+**+ 25 prova horoncusu ekle** ile 200 kişilik sahneyi deneyebilirsiniz. Bütün horoncular tek çemberde kalır; kişi sayısı arttıkça çember büyür ve karakterler sahneye sığacak biçimde kademeli küçülür. Kapasite aşılırsa yeni kişiler kuyruğa girer. **Provayı temizle** yalnızca bu sayfa açıldıktan sonra bu düğmeyle eklediğiniz karakterleri çıkarır; kişisel katılım ve destek puanları korunur. Sayfayı yenilemek bu yerel prova listesini sıfırlar. **İsimleri göster** sahnedeki izleyici etiketlerini açıp kapatır. FPS göstergesi kısa görsel kontrol içindir; uzun süreli performans ölçümü değildir.
 
 OBS Browser Source: `http://127.0.0.1:5173/?obs=1`, genişlik **1080**, yükseklik **1920**. Bu görünüm prova kontrollerini gizler. Tarayıcıda tam 1080 × 1920 alan doğrulandı; OBS uygulamasında yayın doğrulaması henüz yapılmadı.
 
@@ -77,7 +77,7 @@ npm run build
 - Yerel geliştirme içindir. Tek backend worker kullanın; portları internete açmayın. Prova paneli geliştirme token'ını kullanır. `ADMIN_TOKEN` değiştirilirse panel yerine özel başlıklı API isteği kullanın.
 - TikTok adaptörü ve hediye serisi normalizasyonu uygulandı ancak gerçek yayında henüz doğrulanmadı. SQLite, yönetim paneli, hız sınırı ve kalıcı olay tekilleştirmesi sonraki aşamalardır.
 - Karakterler özgün, kodla çizilmiş altı karelik pixel sprite sheet'leridir. Köy haritası ve efektler de kodla üretilir; harici görsel veya font indirilmez. Müzik henüz eklenmedi.
-- 200 karakter ve dört halka desteği eklendi; uzun süreli FPS, OBS ve tam kapasite görsel testi ayrıca yapılacak.
+- Tek büyüyen halkada 200 karakter desteği eklendi; uzun süreli FPS, OBS ve tam kapasite görsel testi ayrıca yapılacak.
 
 ## Dizinler
 

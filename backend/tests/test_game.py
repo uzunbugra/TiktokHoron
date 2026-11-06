@@ -62,7 +62,7 @@ def test_100_events_and_snapshot_after_reconnect():
             assert state['waiting'] == 0
 
 
-def test_default_capacity_supports_four_full_rings():
+def test_default_capacity_supports_200_dancers():
     game = Game()
     for i in range(201):
         game.apply(event(f'ring-{i}'))

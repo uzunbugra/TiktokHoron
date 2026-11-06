@@ -6,7 +6,7 @@ Başlangıç tarihi: 6 Kasım 2026. Kaynak: [paylaşılan proje konuşması](htt
 
 Tek yayıncı olarak kendi TikTok LIVE yayınımızda kullanacağımız, MacBook üzerinde çalışan bir horon oyunu geliştirmek. Görsel yön: Karadeniz köy düğünü, ortada gelin/damat, çevrede kullanıcı adları görünen 2D pixel art dansçılar. Ücretsiz sohbet katılımı her zaman açık; hediyeler görsel kutlama ve destek sıralaması sağlar.
 
-İlk sürümde çoklu yayıncı, SaaS, üyelik, ödeme sistemi ve bulut dağıtımı yok. Hedef dört bağımsız halkada 200 eş zamanlı karakter, 1080 × 1920 dikey OBS sahnesi ve 60 FPS; yük altında alt sınır 30 FPS. Bunlar ölçülmesi gereken hedeflerdir.
+İlk sürümde çoklu yayıncı, SaaS, üyelik, ödeme sistemi ve bulut dağıtımı yok. Hedef büyüyen tek halkada 200 eş zamanlı karakter, 1080 × 1920 dikey OBS sahnesi ve 60 FPS; yük altında alt sınır 30 FPS. Bunlar ölçülmesi gereken hedeflerdir.
 
 ## Mimari
 
@@ -62,7 +62,7 @@ Yorum olayında `type: "comment"` ve `text: "!katil"` kullanılır. WebSocket me
 - [x] WebSocket durum aktarımı ve istemci yeniden bağlantısı
 - [x] Phaser dikey düğün sahnesi ve hareketli geçici pixel karakterler
 - [x] Sahte yorum/hediye kontrol paneli ve OBS görünümü
-- [ ] 200 karakter/dört halka performans ölçümü ve OBS görüntü kontrolü
+- [ ] Tek büyüyen halkada 200 karakter performans ölçümü ve OBS görüntü kontrolü
 
 ### Aşama 2 — Görsel kalite
 
@@ -91,7 +91,7 @@ TikTokLive üçüncü taraf bağlantı seçeneğidir; resmi TikTok desteği vars
 
 ## Yayına hazır kabul kriterleri
 
-- [ ] 200 karakter dört halkada hareket ederken 30 FPS altına düşmüyor.
+- [ ] 200 karakter tek halkada hareket ederken 30 FPS altına düşmüyor.
 - [ ] 100 ardışık sahte olayda durum ve WebSocket bağlantısı tutarlı kalıyor.
 - [ ] Aynı hediye ve seri ara bildirimleri çift puan üretmiyor.
 - [ ] Katılma, ayrılma, kuyruk ilerlemesi ve yeniden bağlanma çalışıyor.
